@@ -9,7 +9,7 @@
         android:title="Appointments"
         android:icon="@drawable/appointment_icon" />
     <item
-        android:id="@+id/menu_"
+        android:id="@+id/menu_video"
         android:title="Video Consultation"
         android:icon="@drawable/video_icon" />
 </menu>
