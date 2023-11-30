@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Telehealth</string>
+    <string name="select_doctor">Select doctor</string>
+    <string name="select_time">Select time</string>
 </resources>
