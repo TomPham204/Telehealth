@@ -13,9 +13,13 @@ import io.agora.rtc.Constants
 class VideoActivity : AppCompatActivity() {
     private lateinit var videoContainer: FrameLayout
     private var agView: AgoraVideoViewer? = null
+
+    // To decide our app at agora backend
     private val appId="0ce32711a8814c9fa0bb74905dcd2b9d"
-    private var channel="1"
     private val token="5736233b804c41de93ac35ecf393cc9f"
+
+    // which meeting room would we choose
+    private var channel="1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -3,7 +3,6 @@ package com.example.telehealth.appointment
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
+import com.example.telehealth.VideoActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
@@ -178,7 +178,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
 
     override fun onVideoCallClick(appointment: Appointment) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://facebook.com/profile.php?id=${appointment.doctorId}"))
+//            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://facebook.com/profile.php?id=${appointment.doctorId}"))
+            val intent = Intent(requireContext(), VideoActivity::class.java)
+            intent.putExtra("DOCTOR_ID", appointment.doctorId)
             startActivity(intent)
         } catch(e: Exception) {
             Log.d("startVideoActivity", e.toString())

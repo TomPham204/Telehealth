@@ -6,6 +6,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!--https://docs.agora.io/en/video-calling/get-started/get-started-sdk?platform=android-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -27,8 +28,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Telehealth"
         tools:targetApi="31">
+
+        <!--Facebook SDK-->
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
+
         <activity android:name=".VideoActivity" />
         <activity
             android:name=".MainActivity"

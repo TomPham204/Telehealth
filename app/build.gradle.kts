@@ -60,6 +60,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("com.github.AgoraIO-Community.Android-UIKit:final:v2.0.6")
     implementation("com.google.code.gson:gson:2.8.9")
+
+    // Facebook SDK
     implementation("com.facebook.android:facebook-android-sdk:latest.release")
 
     // Room

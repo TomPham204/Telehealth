@@ -142,8 +142,9 @@ class ProfileFragment : Fragment() {
             val age = binding.textViewAge.text.toString().toIntOrNull() ?: 0 // Defaulting to 0 if conversion fails
             val gender = binding.textViewGender.text.toString()
             val token = profileDao.getTokenById(existedId)!!
+            val password = binding.textViewPassword.text.toString()
 
-            val updatedProfile = ProfileModel(existedId, name, age, gender, token)
+            val updatedProfile = ProfileModel(existedId, password, name ,age, gender, token)
 
             profileDao.updateProfile(updatedProfile)
 
@@ -181,7 +182,7 @@ class ProfileFragment : Fragment() {
 
                 if (existingUser == null) {
                     // User does not exist, so let's insert them into the database
-                    val newUser = ProfileModel(userId, userName, 0, "male", token)
+                    val newUser = ProfileModel(userId, "user", userName, 0, "male", token)
                     profileDao.insertProfile(newUser)
                 }
 
