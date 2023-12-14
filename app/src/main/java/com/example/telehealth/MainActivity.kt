@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.telehealth.appointment.AppointmentFragment
-import com.example.telehealth.profile.ProfileFragment
+import com.example.telehealth.fragment.ProfileFragment
+import com.facebook.FacebookSdk
+import com.facebook.LoggingBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -13,6 +15,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        FacebookSdk.sdkInitialize(applicationContext);
+        FacebookSdk.setIsDebugEnabled(true);
+        FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 

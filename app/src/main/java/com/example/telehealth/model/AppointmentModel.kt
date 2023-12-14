@@ -11,6 +11,4 @@ data class AppointmentModel(
     val userId: String,
     val doctorId: String,
     val dateTime: Date,
-    val description: String
-    // Any other details relevant to an appointment
 )

@@ -2,4 +2,7 @@
     <string name="app_name">Telehealth</string>
     <string name="select_doctor">Select doctor</string>
     <string name="select_time">Select time</string>
+    <string name="facebook_app_id">2301348236725111</string>
+    <string name="fb_login_protocol_scheme">fb2301348236725111</string>
+    <string name="facebook_client_token">1d5056283cedd607a078496b46320279</string>
 </resources>
