@@ -9,6 +9,4 @@ data class DoctorModel(
     @PrimaryKey val doctorId: String,
     val name: String,
     val specialty: String,
-    val messengerLink: String
-    // Any other doctor-specific details
 )

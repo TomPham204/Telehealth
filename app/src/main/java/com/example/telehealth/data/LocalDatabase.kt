@@ -7,17 +7,14 @@ import androidx.room.RoomDatabase
 import com.example.telehealth.model.AppointmentModel
 import com.example.telehealth.model.DoctorModel
 import com.example.telehealth.model.ProfileModel
-import com.example.telehealth.model.UserModel
-import com.example.telehealth.data.AppointmentDao
-import com.example.telehealth.data.DoctorDao
 
-@Database(entities = [UserModel::class, ProfileModel::class, AppointmentModel::class,
+@Database(entities = [ProfileModel::class, AppointmentModel::class,
     DoctorModel::class], version = 1)
 abstract class LocalDatabase : RoomDatabase() {
 
     abstract fun appointmentDao(): AppointmentDao
     abstract fun doctorDao(): DoctorDao
-    // Define other DAOs here
+    abstract fun profileDao(): ProfileDao
 
     companion object {
         @Volatile

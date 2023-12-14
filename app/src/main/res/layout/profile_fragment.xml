@@ -10,28 +10,44 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/textViewName"
+            android:id="@+id/textViewId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name: John Doe"
+            android:text="Sample ID"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/textViewEmail"
+        <EditText
+            android:id="@+id/textViewName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email: john@example.com"
+            android:text="Sample name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/textViewAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sample email"
             android:textSize="16sp"
             android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/textViewPhone"
+        <EditText
+            android:id="@+id/textViewGender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Phone: +1234567890"
+            android:text="Sample gender: Male"
             android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Update profile"
+            android:layout_marginTop="16dp" />
 
         <Button
             android:id="@+id/logoutButton"
