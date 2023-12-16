@@ -1,4 +1,4 @@
-package com.example.telehealth.model
+package com.example.telehealth.data.dataclass
 
 // https://developer.android.com/reference/androidx/room/package-summary
 import androidx.room.Entity

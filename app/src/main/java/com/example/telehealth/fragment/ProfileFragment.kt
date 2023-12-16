@@ -14,10 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.example.telehealth.MainActivity
 import com.example.telehealth.R
-import com.example.telehealth.data.LocalDatabase
+import com.example.telehealth.data.database.LocalDatabase
 import com.example.telehealth.databinding.LoginScreenBinding
 import com.example.telehealth.databinding.ProfileFragmentBinding
-import com.example.telehealth.model.ProfileModel
+import com.example.telehealth.data.dataclass.ProfileModel
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException

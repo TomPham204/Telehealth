@@ -1,10 +1,10 @@
-package com.example.telehealth.data
+package com.example.telehealth.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.telehealth.model.AppointmentModel
+import com.example.telehealth.data.dataclass.AppointmentModel
 
 @Dao
 interface AppointmentDao {

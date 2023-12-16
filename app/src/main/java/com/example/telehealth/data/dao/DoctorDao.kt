@@ -1,9 +1,9 @@
-package com.example.telehealth.data
+package com.example.telehealth.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.telehealth.model.DoctorModel
+import com.example.telehealth.data.dataclass.DoctorModel
 
 @Dao
 interface DoctorDao {
