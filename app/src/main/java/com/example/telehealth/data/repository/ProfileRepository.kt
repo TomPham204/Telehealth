@@ -1,7 +1,7 @@
 package com.example.telehealth.repository
 
 import android.content.Context
-import com.example.telehealth.model.ProfileModel
+import com.example.telehealth.data.dataclass.ProfileModel
 
 class ProfileRepository(private val context: Context) {
     // Implement methods for handling user profile data, e.g., fetching from local storage or APIs

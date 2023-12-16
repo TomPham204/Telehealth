@@ -1,12 +1,15 @@
-package com.example.telehealth.data
+package com.example.telehealth.data.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.telehealth.model.AppointmentModel
-import com.example.telehealth.model.DoctorModel
-import com.example.telehealth.model.ProfileModel
+import com.example.telehealth.data.dao.AppointmentDao
+import com.example.telehealth.data.dataclass.AppointmentModel
+import com.example.telehealth.data.dao.DoctorDao
+import com.example.telehealth.data.dataclass.DoctorModel
+import com.example.telehealth.data.dao.ProfileDao
+import com.example.telehealth.data.dataclass.ProfileModel
 
 @Database(entities = [ProfileModel::class, AppointmentModel::class,
     DoctorModel::class], version = 1)

@@ -58,18 +58,22 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    implementation("com.github.AgoraIO-Community.Android-UIKit:final:v2.0.6")
     implementation("com.google.code.gson:gson:2.8.9")
 
     // Facebook SDK
     implementation("com.facebook.android:facebook-android-sdk:latest.release")
 
-    // Room
-    val roomVersion = "2.6.1"
+    // AgoraIO SDK
+    implementation("com.github.AgoraIO-Community.Android-UIKit:final:v2.0.6")
 
+    // Room for local SQLite operation
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
-
-    // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$roomVersion")
+
+    // Networking for HTTP requests by OkHTTP3
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }
