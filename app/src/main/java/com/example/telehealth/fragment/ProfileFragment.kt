@@ -1,199 +1,137 @@
 package com.example.telehealth.fragment
 
 import android.content.Context
-import android.content.Intent
+import android.net.ParseException
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.viewbinding.ViewBinding
 import com.example.telehealth.MainActivity
-import com.example.telehealth.R
-import com.example.telehealth.data.database.LocalDatabase
-import com.example.telehealth.databinding.LoginScreenBinding
-import com.example.telehealth.databinding.ProfileFragmentBinding
 import com.example.telehealth.data.dataclass.ProfileModel
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.GraphRequest
-import com.facebook.login.LoginResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
+import com.example.telehealth.databinding.ProfileFragmentBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProfileFragment : Fragment() {
-    private lateinit var binding: ViewBinding
-    private lateinit var callbackManager: CallbackManager
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        callbackManager = CallbackManager.Factory.create()
-        val existedId=checkLoginStatus()
-        return if (existedId != "") {
-            val profileBinding: ProfileFragmentBinding = DataBindingUtil.inflate(
-                inflater, R.layout.profile_fragment, container, false
-            )
+    private var _binding: ProfileFragmentBinding? = null
+    private val binding get() = _binding!!
+    private var user: ProfileModel? = null
 
-            displayProfileInfo(profileBinding, existedId)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = ProfileFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-            profileBinding.logoutButton.setOnClickListener {
-                saveLoginStatus("")
-                remountProfileFragment()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadProfileData()
+
+        binding.saveButton.setOnClickListener {
+            saveProfileData()
+        }
+
+        binding.logoutButton.setOnClickListener {
+            fun saveLoginStatus(userId: String) {
+                val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+                with(sharedPreferences.edit()) {
+                    putString("USER_ID", userId)
+                    apply()
+                }
             }
+            saveLoginStatus("")
+            (activity as? MainActivity)?.replaceFragment(LoginFragment())
+        }
+    }
 
-            profileBinding.saveButton.setOnClickListener {
-                updateProfile(profileBinding, existedId)
-            }
+    private fun loadProfileData() {
+        // Load the user's profile data and set it in the EditText fields
+        // This is a placeholder - replace it with your actual data loading logic
+        val userProfile = getUserProfile()
 
-            profileBinding.root
+        binding.editTextId.text = userProfile.userId
+        binding.editTextEmail.setText(userProfile.email)
+        binding.editTextFunctionality.setText(userProfile.functionality)
+        binding.editTextName.setText(userProfile.name)
+        binding.editTextAddress.setText(userProfile.address)
+        binding.editTextDateOfBirth.setText(userProfile.dateOfBirth.toString())
+        binding.editTextGender.setText(userProfile.gender)
+        binding.editTextDescription.setText(userProfile.description)
+        // Don't set the password for security reasons
+    }
+
+    private fun saveProfileData() {
+        // Save the updated profile data
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        var _dateOfBirth: Date? = null
+
+        try {
+            _dateOfBirth = dateFormat.parse(binding.editTextDateOfBirth.text.toString())
+        } catch (e: ParseException) {
+            Toast.makeText(context, "Invalid Date Format", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val _password = binding.editTextPassword.text.toString().trim()
+
+        if(_password.isNotEmpty()) {
+            val updatedProfile = ProfileModel(
+                userId = binding.editTextId.text.toString(),
+                email = binding.editTextEmail.text.toString(),
+                functionality = binding.editTextFunctionality.text.toString(),
+                name = binding.editTextName.text.toString(),
+                dateOfBirth = _dateOfBirth,
+                address = binding.editTextAddress.text.toString(),
+                gender = binding.editTextGender.text.toString(),
+                description = binding.editTextDescription.text.toString(),
+                password = _password
+                )
+            updateProfile(updatedProfile)
         } else {
-            binding = LoginScreenBinding.inflate(inflater, container, false)
-            showLoginForm()
-            binding.root
+            val updatedProfile = ProfileModel(
+                userId = binding.editTextId.text.toString(),
+                email = binding.editTextEmail.text.toString(),
+                functionality = binding.editTextFunctionality.text.toString(),
+                name = binding.editTextName.text.toString(),
+                dateOfBirth = _dateOfBirth,
+                address = binding.editTextAddress.text.toString(),
+                gender = binding.editTextGender.text.toString(),
+                description = binding.editTextDescription.text.toString(),
+                password = user!!.password
+            )
+            updateProfile(updatedProfile)
         }
+
     }
 
-    private fun checkLoginStatus(): String {
-        return try {
-            val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-            sharedPreferences.getString("USER_ID", "").toString()
-        } catch(error: Exception) {
-            Log.d("checkLoginStatus", error.toString())
-            ""
-        }
+    private fun getUserProfile(): ProfileModel {
+        // Implement the logic to retrieve the user profile
+        // This might involve a database query or a network request
+        val user=ProfileModel(
+            userId = "abc",
+            email = "abc",
+            functionality = "USER",
+            name = "abc",
+            dateOfBirth = Date("2000-07-07"),
+            address = "abc",
+            gender = "MALE",
+            description = "abc",
+            password = "abc"
+        )
+        return user
     }
 
-    private fun saveLoginStatus(currentUserId: String) {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putString("USER_ID", currentUserId)
-            apply()
-        }
+    private fun updateProfile(profile: ProfileModel) {
+        // Implement the logic to update the user profile
+        // This might involve a database update or a network request
     }
 
-    private fun showLoginForm() {
-        val loginBinding = binding as? LoginScreenBinding
-        loginBinding?.facebookLoginButton?.setPermissions("public_profile")
-        loginBinding?.facebookLoginButton?.registerCallback(callbackManager, object :
-            FacebookCallback<LoginResult> {
-            override fun onSuccess(loginResult: LoginResult) {
-                val token = loginResult.accessToken.token
-
-                val request = GraphRequest.newMeRequest(
-                    loginResult.accessToken
-                ) { jsonObject, response ->
-                    if (response?.error != null) {
-                        // Handle errors, if any.
-                        Log.e("fb_oauth", response.error.toString())
-                    } else if (jsonObject != null) {
-                        val userId = jsonObject.getString("id")
-                        val userName = jsonObject.getString("name")
-
-                        checkUserInDatabase(userId, userName, token)
-                    }
-                }
-
-                var parameters = Bundle()
-                parameters.putString("fields", "id,name")
-                request.parameters = parameters
-                request.executeAsync()
-            }
-
-            override fun onCancel() {
-                // App code
-            }
-
-            override fun onError(exception: FacebookException) {
-                Log.d("fb_error", exception.toString())
-            }
-        })
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Pass the activity result back to the Facebook SDK
-        callbackManager.onActivityResult(requestCode, resultCode, data)
-    }
-
-    private fun remountProfileFragment() {
-        try {
-            val mainActivity = activity as? MainActivity
-            mainActivity?.replaceFragment(ProfileFragment())
-        }
-        catch(error: Exception) {
-            Log.d("remountProfileFragment", error.toString())
-        }
-    }
-
-    private fun updateProfile(binding: ProfileFragmentBinding, existedId: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val profileDao = LocalDatabase.getDatabase(requireContext()).profileDao()
-            val name = binding.textViewName.text.toString()
-            val age = binding.textViewAge.text.toString().toIntOrNull() ?: 0 // Defaulting to 0 if conversion fails
-            val gender = binding.textViewGender.text.toString()
-            val token = profileDao.getTokenById(existedId)!!
-            val password = binding.textViewPassword.text.toString()
-
-            val updatedProfile = ProfileModel(existedId, password, name ,age, gender, token)
-
-            profileDao.updateProfile(updatedProfile)
-
-            withContext(Dispatchers.Main) {
-                // Show a confirmation message or do any other UI related actions
-                Toast.makeText(requireContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun displayProfileInfo(binding: ProfileFragmentBinding, existedId: String) {
-        lifecycleScope.launch {
-            val profileDao = LocalDatabase.getDatabase(requireContext()).profileDao()
-            val userProfile = profileDao.getProfileById(existedId)
-
-            // Now update the UI with the retrieved profile information
-            // Make sure this is done on the main thread
-            userProfile?.let { profile ->
-                withContext(Dispatchers.Main) {
-                    binding.textViewId.text = profile.userId
-                    binding.textViewName.setText(profile.name)
-                    binding.textViewAge.setText(profile.age.toString())
-                    binding.textViewGender.setText(profile.gender)
-                }
-            }
-        }
-    }
-
-    private fun checkUserInDatabase(userId: String, userName: String, token: String) {
-        try {
-            // Use Room's coroutine support to move database operations off the main thread
-            lifecycleScope.launch {
-                val profileDao = LocalDatabase.getDatabase(requireContext()).profileDao()
-                val existingUser = profileDao.getProfileById(userId)
-
-                if (existingUser == null) {
-                    // User does not exist, so let's insert them into the database
-                    val newUser = ProfileModel(userId, "user", userName, 0, "male", token)
-                    profileDao.insertProfile(newUser)
-                }
-
-                // Save the login status with the current user ID
-                saveLoginStatus(userId)
-                remountProfileFragment()
-            }
-        } catch (error: Exception) {
-            Log.e("checkUserInDatabase", error.toString())
-            remountProfileFragment()
-        }
-    }
-
 }

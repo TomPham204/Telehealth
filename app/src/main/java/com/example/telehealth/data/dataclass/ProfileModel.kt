@@ -9,9 +9,9 @@ import java.util.Date
 data class ProfileModel(
     // Credential here
     @PrimaryKey val userId: String,
+    val email: String,
     val password: String,
     val functionality: String,  // "USER", "DOCTOR", "ADMIN"
-    val token: String,
 
     // User's profile here
     val name: String,
@@ -19,5 +19,4 @@ data class ProfileModel(
     val dateOfBirth: Date,
     val gender: String,         // "MALE" or "FEMALE"
     val description: String
-
 )

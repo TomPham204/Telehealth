@@ -10,5 +10,7 @@ data class AppointmentModel(
     @PrimaryKey val appointmentId: String,
     val userId: String,
     val doctorId: String,
+    val doctorName: String,
     val dateTime: Date,
+    var status: String,
 )

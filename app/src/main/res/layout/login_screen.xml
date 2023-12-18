@@ -9,14 +9,42 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp">
-
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/facebookLoginButton"
+        <EditText
+            android:id="@+id/emailLoginText"
             android:layout_width="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="707dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:text="admin@gmail.com"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/passwordLoginText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:text="admin"
+            android:inputType="textPassword"
+            android:layout_marginBottom="16dp"/>
+
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#CCCCCC"
+            android:layout_marginBottom="50dp"
+            android:layout_marginTop="50dp"/>
+        <Button
+            android:id="@+id/toSignupButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Join us now"/>
+
 
     </LinearLayout>
 

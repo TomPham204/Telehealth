@@ -1,6 +1,7 @@
 package com.example.telehealth.data.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -20,4 +21,7 @@ interface ProfileDao {
 
     @Update
     suspend fun updateProfile(profile: ProfileModel)
+
+    @Query("DELETE FROM profiles WHERE userId = :userId")
+    suspend fun deleteProfile(userId: String)
 }

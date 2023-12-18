@@ -18,5 +18,9 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE userId = :userId")
     fun getAppointmentsByUser(userId: String): List<AppointmentModel>
 
-    // You can add more queries as needed, such as delete or specific searches
+    @Query("DELETE FROM appointments WHERE appointmentId = :id")
+    fun deleteAppointmentsById(id: String)
+
+    @Query("SELECT * FROM appointments WHERE status = :status")
+    fun getAppointmentsByStatusAdmin(status: String): List<AppointmentModel>
 }
