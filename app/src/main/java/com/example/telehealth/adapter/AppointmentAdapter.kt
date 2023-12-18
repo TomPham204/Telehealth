@@ -1,4 +1,4 @@
-package com.example.telehealth.appointment
+package com.example.telehealth.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -6,21 +6,23 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
+import com.example.telehealth.data.dataclass.AppointmentModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 interface OnRemoveClickListener {
-    fun onRemoveClick(appointment: Appointment)
+    fun onRemoveClick(appointment: AppointmentModel)
 }
 
 interface OnVideoCallClickListener {
-    fun onVideoCallClick(appointment: Appointment)
+    fun onVideoCallClick(appointment: AppointmentModel)
 }
 class AppointmentAdapter(
-    private var appointments: MutableList<Appointment>,
+    private var appointments: MutableList<AppointmentModel>,
     private val onRemoveClickListener: OnRemoveClickListener,
-    private val onVideoCallClickListener: OnVideoCallClickListener) :
+    private val onVideoCallClickListener: OnVideoCallClickListener
+) :
     RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
@@ -31,8 +33,8 @@ class AppointmentAdapter(
 
     override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
         val currentItem = appointments[position]
-        holder.doctorName.text = currentItem.doctorName
-        holder.time.text = convertTimestampToDateString(currentItem.time.toLong())
+        holder.doctorName.text = currentItem.doctorName.toString()
+        holder.time.text = currentItem.dateTime.toString()
 
         holder.buttonRemove.setOnClickListener {
             onRemoveClickListener.onRemoveClick(currentItem)
@@ -43,7 +45,7 @@ class AppointmentAdapter(
     }
 
     private fun convertTimestampToDateString(timestamp: Long): String {
-        val sdf = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
+        val sdf = SimpleDateFormat("YYYY/MM/dd HH:mm", Locale.getDefault())
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = timestamp // Set calendar time using timestamp
         return sdf.format(calendar.time)
@@ -53,7 +55,7 @@ class AppointmentAdapter(
         return appointments.size
     }
 
-    fun updateList(newList: MutableList<Appointment>) {
+    fun updateList(newList: MutableList<AppointmentModel>) {
         appointments = newList
         notifyDataSetChanged()
     }

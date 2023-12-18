@@ -13,5 +13,6 @@ data class DoctorModel(
     // The doctorID is the same as the userID in the profile table
     // Me: Make the reference key here for the doctorID
     @PrimaryKey val doctorId: String,
+    val doctorName: String,
     val specialty: String,
 )

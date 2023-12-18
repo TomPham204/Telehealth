@@ -3,7 +3,8 @@ package com.example.telehealth
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.telehealth.appointment.AppointmentFragment
+import com.example.telehealth.fragment.AppointmentFragment
+import com.example.telehealth.fragment.LoginFragment
 import com.example.telehealth.fragment.ProfileFragment
 import com.facebook.FacebookSdk
 import com.facebook.LoggingBehavior
@@ -23,8 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set default fragment (ProfileFragment) when the app starts
         if (savedInstanceState == null) {
-            val profileFragment = ProfileFragment()
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, profileFragment)
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, LoginFragment())
                 .commit()
         }
 

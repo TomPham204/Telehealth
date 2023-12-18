@@ -1,4 +1,4 @@
-package com.example.telehealth.appointment
+package com.example.telehealth.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -17,17 +17,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
 import com.example.telehealth.VideoActivity
+import com.example.telehealth.adapter.AppointmentAdapter
+import com.example.telehealth.adapter.DoctorAdapter
+import com.example.telehealth.adapter.DoctorSpinnerItem
+import com.example.telehealth.adapter.OnRemoveClickListener
+import com.example.telehealth.adapter.OnVideoCallClickListener
+import com.example.telehealth.data.dataclass.AppointmentModel
+import com.example.telehealth.data.dataclass.DoctorModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickListener {
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var appointmentsList: MutableList<Appointment>
+    private lateinit var appointmentsList: MutableList<AppointmentModel>
     private lateinit var adapter: AppointmentAdapter
 
     override fun onCreateView(
@@ -53,11 +61,11 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         timeSpinner.adapter = timeAdapter
 
         val doctorsList = listOf(
-            Doctor("Dr. Smith", "Cardiology", "Hospital A",10),
-            Doctor("Dr. Johnson", "Dermatology", "Clinic B", 11),
+            DoctorModel("abc","Dr. Smith", "Cardiology"),
+            DoctorModel("xyz","Dr. Johnson", "Dermatology"),
         )
         val doctorsDropdownList = doctorsList.map { doctor ->
-            DoctorSpinnerItem("${doctor.name}: ${doctor.specialty}, ${doctor.workplace}", doctor)
+            DoctorSpinnerItem("${doctor.doctorName}: ${doctor.specialty}", doctor)
         }
         val doctorAdapter = DoctorAdapter(requireContext(), doctorsDropdownList)
         doctorSpinner.adapter = doctorAdapter
@@ -98,14 +106,17 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     private fun saveAppointment() {
         // Logic to get selected doctor and time from spinners
         val selectedDoctor = view?.findViewById<Spinner>(R.id.doctorSpinner)?.selectedItem!! as DoctorSpinnerItem
-        val selectedTime = view?.findViewById<Spinner>(R.id.timeSpinner)?.selectedItem.toString()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val selectedTime = dateFormat.parse(view?.findViewById<Spinner>(R.id.timeSpinner)?.selectedItem.toString().trim())
+        val id=UUID.randomUUID().toString()
+        val userId=checkLoginStatus()
 
         // Add new appointment to the existing list
-        val newAppointment = Appointment(selectedDoctor.doctor.name, selectedDoctor.doctor.id, convertToUnixTimestamp(selectedTime))
+        val newAppointment = AppointmentModel(id, userId, selectedDoctor.doctor.doctorId, selectedDoctor.doctor.doctorName, selectedTime, "PENDING")
         appointmentsList.add(newAppointment)
 
         // Save updated appointments list to SharedPreferences
-        saveAppointmentsToSharedPreferences(appointmentsList)
+        saveAppointments(appointmentsList)
 
         // Update RecyclerView
         adapter.updateList(appointmentsList)
@@ -114,20 +125,20 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         updateUIVisibility()
     }
 
-    private fun retrieveAppointments(): MutableList<Appointment> {
+    private fun retrieveAppointments(): MutableList<AppointmentModel> {
         val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
         val appointmentsJson = sharedPreferences.getString("appointmentsKey", null)
-        val appointmentsList = mutableListOf<Appointment>()
+        val appointmentsList = mutableListOf<AppointmentModel>()
 
         appointmentsJson?.let {
-            val type = object : TypeToken<List<Appointment>>() {}.type
+            val type = object : TypeToken<List<AppointmentModel>>() {}.type
             appointmentsList.addAll(Gson().fromJson(it, type))
         }
 
         return appointmentsList
     }
 
-    private fun saveAppointmentsToSharedPreferences(appointmentsList: List<Appointment>) {
+    private fun saveAppointments(appointmentsList: List<AppointmentModel>) {
         val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val gson = Gson()
@@ -140,7 +151,7 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         val timeSlots = ArrayList<String>()
 
         val calendar = Calendar.getInstance()
-        val sdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
         calendar.time = Date() // Set calendar to today
 
@@ -163,20 +174,25 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         return timeSlots
     }
 
-    private fun convertToUnixTimestamp(selectedTime: String): Long {
-        val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
-        val date = dateFormat.parse(selectedTime)
-        return date?.time ?: 0L
+    private fun checkLoginStatus(): String {
+        return try {
+            val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+            val id=sharedPreferences.getString("USER_ID", "")
+            id!!
+        } catch(error: Exception) {
+            Log.d("checkLoginStatus", error.toString())
+            ""
+        }
     }
 
-    override fun onRemoveClick(appointment: Appointment) {
+    override fun onRemoveClick(appointment: AppointmentModel) {
         appointmentsList.remove(appointment)
-        saveAppointmentsToSharedPreferences(appointmentsList)
+        saveAppointments(appointmentsList)
         adapter.updateList(appointmentsList)
         updateUIVisibility()
     }
 
-    override fun onVideoCallClick(appointment: Appointment) {
+    override fun onVideoCallClick(appointment: AppointmentModel) {
         try {
 //            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://facebook.com/profile.php?id=${appointment.doctorId}"))
             val intent = Intent(requireContext(), VideoActivity::class.java)

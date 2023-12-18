@@ -75,5 +75,5 @@ dependencies {
     // Networking for HTTP requests by OkHTTP3
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:okhttp")
-    implementation("com.squareup.okhttp3:logging-interceptor")
+//    implementation("com.squareup.okhttp3:logging-interceptor")
 }

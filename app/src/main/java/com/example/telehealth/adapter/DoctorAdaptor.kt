@@ -1,4 +1,4 @@
-package com.example.telehealth.appointment
+package com.example.telehealth.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,17 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.telehealth.R
-
-data class Doctor(
-    var name: String,
-    var specialty: String,
-    var workplace: String,
-    var id: Int,
-)
+import com.example.telehealth.data.dataclass.DoctorModel
 
 data class DoctorSpinnerItem(
     val displayText: String,
-    val doctor: Doctor
+    val doctor: DoctorModel
 )
 class DoctorAdapter(context: Context, doctors: List<DoctorSpinnerItem>) :
     ArrayAdapter<DoctorSpinnerItem>(context, R.layout.doctor_spinner_item, doctors) {
