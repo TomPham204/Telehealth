@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
+import java.util.Date
 
 class LoginFragment : Fragment() {
 
@@ -36,6 +37,10 @@ class LoginFragment : Fragment() {
     private fun validateCredential(email: String, password: String): ProfileModel? {
         // call DB to check if credential is correct and exist a user
         // return the user if exists
+        if(email=="admin@admin.admin" && password=="admin") {
+            return ProfileModel("0", "admin@admin.admin","admin","ADMIN","admin","", Date("1/1/2001"),"MALE","")
+        }
+
         try {
             return null
         } catch (error: Exception) {
@@ -62,8 +67,12 @@ class LoginFragment : Fragment() {
             // save active userId to local storage
             saveLoginStatus(user.userId)
 
-            // direct to Profile page
-            (activity as? MainActivity)?.replaceFragment(ProfileFragment())
+            if(user.functionality=="ADMIN") {
+                (activity as? MainActivity)?.replaceFragment(AdminFragment())
+            } else {
+                (activity as? MainActivity)?.replaceFragment(ProfileFragment())
+            }
+
         } else {
             //show toast of incorrect credential
             Toast.makeText(activity, "Incorrect email or password", Toast.LENGTH_LONG).show()
