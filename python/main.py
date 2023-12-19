@@ -21,6 +21,10 @@ ERROR_LOG = './database/db/error.log'
 LOG_SUFFIX = '.log'
 RETRY: int = 3
 INTERVAL: int = 60
+DATETIME_FORMAT: str = f"%Y/%m/%d %H:%M:%S"
+def _datetime() -> str:
+    return datetime.datetime.now().strftime(DATETIME_FORMAT)
+
 
 # [1.2]: Database connection
 DB_CONN = sqlite3.connect(SRC_DATABASE)
@@ -64,8 +68,7 @@ def _found_any_log_file(folder: str) -> bool:
 
 def _stream_log_file_to_database(log_file: str) -> int:
     with open(ERROR_LOG, "a") as server_log:
-        dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-        server_log.write(f"[{dt}] Streaming log file {log_file} to database file {SRC_DATABASE}\n")
+        server_log.write(f"[{_datetime()}] Streaming log file {log_file} to database file {SRC_DATABASE}\n")
 
         failed_query: int = 0
         with open(os.path.join(LOG_FOLDER, log_file), "r") as f:
@@ -77,9 +80,7 @@ def _stream_log_file_to_database(log_file: str) -> int:
                     DB_CONN.execute(sql)
                 except Exception as e:
                     failed_query += 1
-                    print(f"Error: {e}")
-                    dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-                    server_log.write(f"[{dt}] {e} >> {sql}\n")
+                    server_log.write(f"[{_datetime()}] {e} >> {sql}\n")
 
         if failed_query > 0:
             server_log.write(f"Streaming log file {log_file} has failed on {failed_query} queries\n")
@@ -138,8 +139,7 @@ async def lifespan(application: FastAPI):
     if not os.path.exists(SRC_DATABASE):
         raise Exception(f"Database file {SRC_DATABASE} does not exist")
     with open(ERROR_LOG, "a") as f:
-        dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-        f.write(f"[{dt}] Starting error log and server\n") 
+        f.write(f"[{_datetime()}] Starting error log and server\n") 
 
     # [1]: On Startup
     on_startup()
@@ -160,8 +160,7 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
     with open(ERROR_LOG, "a") as f:
-        dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-        f.write(f"[{dt}] [{request.client.host}]: Access to server.\n")
+        f.write(f"[{_datetime()}] [{request.client.host}]: Access to server.\n")
 
     return {"message": "FastAPI: Welcome to the API of database synchronization.", "status": "OK"}
 
@@ -171,8 +170,7 @@ async def download(request: Request):
     if not os.path.exists(DST_DATABASE):
         backup()
     with open(ERROR_LOG, "a") as f:
-        dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-        f.write(f"[{dt}] [{request.client.host}]: Downloading database file.\n")    
+        f.write(f"[{_datetime()}] [{request.client.host}]: Downloading database file.\n")    
     return FileResponse(DST_DATABASE, media_type="application/octet-stream", filename="server.db")
 
 @app.post("/upload", status_code=status.HTTP_201_CREATED)
@@ -180,8 +178,7 @@ async def upload_file(file: UploadFile = File(...), request: Request = None):
     # Replace 'destination_folder' with the path to the folder where you want to save the file
     if request is not None:
         with open(ERROR_LOG, "a") as f:
-            dt = datetime.datetime.now().strftime(f"%Y%m%d %H:%M:%S")
-            f.write(f"[{dt}] [{request.client.host}]: Uploading database file.\n")
+            f.write(f"[{_datetime()}] [{request.client.host}]: Uploading database file.\n")
 
     random_number = random.randint(0, 100000)
     write_filename = f"{file.filename}-{random_number}" + LOG_SUFFIX
