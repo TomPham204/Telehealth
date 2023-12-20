@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Doctors"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <RecyclerView
+        android:id="@+id/doctorsList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pending Appointments"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+    <Button
+        android:id="@+id/addDoctorButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Doctor"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pendingAppointmentsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#CCCCCC"
+        android:layout_marginVertical="16dp"/>
 
-    </LinearLayout>
-</layout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Appointments"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <RecyclerView
+        android:id="@+id/appointmentsList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>
