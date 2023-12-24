@@ -7,9 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
 import com.example.telehealth.data.dataclass.AppointmentModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 interface OnRemoveClickListener {
     fun onRemoveClick(appointment: AppointmentModel)
@@ -42,13 +39,6 @@ class AppointmentAdapter(
         holder.buttonVideoCall.setOnClickListener {
             onVideoCallClickListener.onVideoCallClick(currentItem)
         }
-    }
-
-    private fun convertTimestampToDateString(timestamp: Long): String {
-        val sdf = SimpleDateFormat("YYYY/MM/dd HH:mm", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = timestamp // Set calendar time using timestamp
-        return sdf.format(calendar.time)
     }
 
     override fun getItemCount(): Int {
