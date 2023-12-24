@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +18,6 @@ import com.example.telehealth.adapter.DoctorAdapterAdmin
 import com.example.telehealth.adapter.OnDeleteListener
 import com.example.telehealth.data.dataclass.DoctorModel
 import com.example.telehealth.data.dataclass.ProfileModel
-import com.example.telehealth.databinding.AdminProfileBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.ParseException
@@ -31,9 +32,6 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
     private var doctors: MutableList<DoctorModel> = mutableListOf()
     private lateinit var doctorsAdapter: DoctorAdapterAdmin
 
-    private var _binding: AdminProfileBinding? = null
-    private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,33 +41,29 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
         val view = inflater.inflate(R.layout.admin_profile, container, false)
 
         getDoctors()
+        Log.d("dt", doctors.toString())
 
         val doctorsList: RecyclerView = view.findViewById(R.id.doctorsList)
         doctorsAdapter = DoctorAdapterAdmin(doctors, this as OnDeleteListener)
         doctorsList.layoutManager = LinearLayoutManager(context)
         doctorsList.adapter = doctorsAdapter
 
-
 //        profileViewModel = ViewModelProvider(requireActivity())[ProfileViewModel::class.java]
-//        appointmentViewModel = ViewModelProvider(requireActivity())[AppointmentViewModel::class.java]
 //        doctorViewModel = ViewModelProvider(requireActivity())[DoctorViewModel::class.java]
 
-        _binding = AdminProfileBinding.inflate(inflater, container, false)
-
-        val addDoctorBtn: Button = _binding!!.addDoctorButtonAdmin
+        val addDoctorBtn: Button = view.findViewById(R.id.addDoctorButtonAdmin)
         addDoctorBtn.setOnClickListener {
             createDoctor()
         }
-        Log.d("doctors 99", doctors.toString())
 
-        return binding.root
+        return view
     }
 
     override fun onDeleteDoctor(doctor: DoctorModel) {
         //call DB to delete
 //        profileViewModel.deleteProfile(uid)
 
-        doctors.filter { i: DoctorModel -> i.doctorId != doctor.doctorId }
+        doctors = doctors.filter { i: DoctorModel -> i.doctorId != doctor.doctorId }.toMutableList()
         setDoctors(doctors)
         doctorsAdapter.updateList(doctors)
     }
@@ -120,33 +114,41 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
 
     private fun createDoctor() {
         val id = UUID.randomUUID().toString()
-        val email = binding.emailSignupText.text.toString()
-        val password = binding.passwordSignupText.text.toString()
-        val name = binding.nameSignupText.text.toString()
-        val address = binding.addressSignupText.text.toString()
-        val gender = binding.genderSignupText.selectedItem.toString()
-        val specialty = binding.specialty.text.toString()
+        val email = view?.findViewById<EditText>(R.id.emailSignupText)?.text.toString()
+        val password = view?.findViewById<EditText>(R.id.passwordSignupText)?.text.toString()
+        val name = view?.findViewById<EditText>(R.id.nameSignupText)?.text.toString()
+        val address = view?.findViewById<EditText>(R.id.addressSignupText)?.text.toString()
+        val gender = view?.findViewById<Spinner>(R.id.genderSignupText)?.selectedItem.toString()
+        val specialty = view?.findViewById<EditText>(R.id.specialty)?.text.toString() // Make sure you have correct ID for specialty EditText
         val functionality = "DOCTOR"
         val description = ""
 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         var dateOfBirth: Date? = null
         try {
-            dateOfBirth = dateFormat.parse(binding.dateOfBirthSignupText.text.toString().trim())
+            dateOfBirth = dateFormat.parse(view?.findViewById<EditText>(R.id.dateOfBirthSignupText)?.text.toString().trim())
         } catch (e: ParseException) {
             Toast.makeText(context, "Invalid Date Format", Toast.LENGTH_SHORT).show()
             return
+        }
+
+        for (i in getUsers()) {
+            if(i.email.toString().equals(email, true)) {
+                Log.d("create dt",i.toString())
+                Toast.makeText(context, "Email already used", Toast.LENGTH_LONG).show()
+                return
+            }
         }
 
         var currentUsers=getUsers()
         currentUsers.add(ProfileModel(id, email, password, functionality, name, address, dateOfBirth, gender, description))
         setUsers(currentUsers)
 
-        Log.d("create user","create user")
+        Log.d("created user","$email $functionality $gender")
 
         doctors.add(DoctorModel(id, name, specialty))
         setDoctors(doctors)
         doctorsAdapter.updateList(doctors)
-        Log.d("create doctor","create doctor")
+        Log.d("created doctor","$name $specialty")
     }
 }

@@ -13,13 +13,6 @@
             android:textSize="18sp"
             android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete doctor below"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/doctorsList"
             android:layout_width="match_parent"
@@ -30,77 +23,81 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="#CCCCCC" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add new doctor below"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
 
-        <EditText
-            android:id="@+id/emailSignupText"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:text="doctor@gmail.com"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="4">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add new doctor below"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
-        <EditText
-            android:id="@+id/passwordSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:text="doctor"
-            android:inputType="textPassword"
-            android:layout_marginBottom="16dp"/>
-        <EditText
-            android:id="@+id/nameSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Name"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/emailSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/specialty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Specialty"
-            android:text="Cardiology"
-            android:inputType="text"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/passwordSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/addressSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Address"
-            android:text="address"
-            android:inputType="textPostalAddress"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/nameSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/dateOfBirthSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Date of Birth (yyyy-MM-dd)"
-            android:text="2000-01-01"
-            android:inputType="date"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/specialty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Specialty"
+                android:inputType="text"
+                android:layout_marginBottom="16dp"/>
 
-        <Spinner
-            android:id="@+id/genderSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/gender_options"
-            android:layout_marginBottom="16dp"/>
+            <EditText
+                android:id="@+id/addressSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:inputType="textPostalAddress"
+                android:layout_marginBottom="16dp"/>
 
-        <Button
-            android:id="@+id/addDoctorButtonAdmin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Add Doctor"/>
+            <EditText
+                android:id="@+id/dateOfBirthSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Date of Birth (yyyy-MM-dd)"
+                android:text="2000-01-01"
+                android:inputType="date"
+                android:layout_marginBottom="16dp"/>
+
+            <Spinner
+                android:id="@+id/genderSignupText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/gender_options"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/addDoctorButtonAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Add Doctor"/>
+        </LinearLayout>
     </LinearLayout>
 </layout>
