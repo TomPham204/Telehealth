@@ -33,6 +33,7 @@ class AdminAppointmentFragment : Fragment(), OnRejectListener, OnAcceptListener 
         val view = inflater.inflate(R.layout.admin_appointment, container, false)
 
         getPendingAppointments()
+
         val appointmentsList: RecyclerView = view.findViewById(R.id.appointmentsList)
         appointmentsAdapter = AppointmentAdapterAdmin(pendingAp, this as OnAcceptListener, this as OnRejectListener)
         appointmentsList.layoutManager = LinearLayoutManager(context)
