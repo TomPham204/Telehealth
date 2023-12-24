@@ -13,7 +13,6 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
@@ -24,9 +23,10 @@ import com.example.telehealth.adapter.DoctorSpinnerItem
 import com.example.telehealth.adapter.OnRemoveClickListener
 import com.example.telehealth.adapter.OnVideoCallClickListener
 import com.example.telehealth.data.dataclass.AppointmentModel
-import com.example.telehealth.viewmodel.AppointmentViewModel
-import com.example.telehealth.viewmodel.DoctorViewModel
+import com.example.telehealth.data.dataclass.DoctorModel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.Integer.max
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -39,15 +39,22 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     private lateinit var appointmentsList: MutableList<AppointmentModel>
     private lateinit var adapter: AppointmentAdapter
 
-    private lateinit var appointmentViewModel: AppointmentViewModel
-    private lateinit var doctorViewModel: DoctorViewModel
+    // Datetime Control
+    private val reserved_num_day_ahead: Int = 1
+    private val num_days: Int = 3
+    private val min_hour: Int = 8
+    private val max_hour: Int = 17
+    private val minute_interval: Int = 15
+
+//    private lateinit var appointmentViewModel: AppointmentViewModel
+//    private lateinit var doctorViewModel: DoctorViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        appointmentViewModel = ViewModelProvider(requireActivity())[AppointmentViewModel::class.java]
-        doctorViewModel = ViewModelProvider(requireActivity())[DoctorViewModel::class.java]
+//        appointmentViewModel = ViewModelProvider(requireActivity())[AppointmentViewModel::class.java]
+//        doctorViewModel = ViewModelProvider(requireActivity())[DoctorViewModel::class.java]
 
         val view = inflater.inflate(R.layout.appointment_fragment, container, false)
 
@@ -67,7 +74,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         )
         timeSpinner.adapter = timeAdapter
 
-        val doctorsList = doctorViewModel.getAllDoctors()
+        // get the list of doctor
+//        val doctorsList = doctorViewModel.getAllDoctors()
+        val doctorsList = retrieveDoctors()
 
         val doctorsDropdownList = doctorsList.map { doctor ->
             DoctorSpinnerItem("${doctor.doctorName}: ${doctor.specialty}", doctor)
@@ -118,14 +127,14 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
 
         // write to DB
         val newAppointment = AppointmentModel(id, userId, selectedDoctor.doctor.doctorId, selectedDoctor.doctor.doctorName, selectedTime, "PENDING")
-        appointmentViewModel.insertAppointment(newAppointment)
+//        appointmentViewModel.insertAppointment(newAppointment)
 
         //write to local storage
         // Add new appointment to the existing list
         appointmentsList.add(newAppointment)
 
         // Save updated appointments list to SharedPreferences
-//        saveListAppointments(appointmentsList)
+        saveListAppointments(appointmentsList)
 
         // Update RecyclerView
         adapter.updateList(appointmentsList)
@@ -137,19 +146,31 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     private fun retrieveAppointments(): MutableList<AppointmentModel> {
         val appointmentsList = mutableListOf<AppointmentModel>()
         // get from db
-        val data = appointmentViewModel.getAppointmentsByUser(checkLoginStatus())
-        appointmentsList.addAll(data)
+//        val data = appointmentViewModel.getAppointmentsByUser(checkLoginStatus())
+//        appointmentsList.addAll(data)
 
         // get from local storage
-//        val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
-//        val appointmentsJson = sharedPreferences.getString("appointmentsKey", null)
+        val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
+        val appointmentsJson = sharedPreferences.getString("appointmentsKey", null)
 
-//        appointmentsJson?.let {
-//            val type = object : TypeToken<List<AppointmentModel>>() {}.type
-//            appointmentsList.addAll(Gson().fromJson(it, type))
-//        }
+        appointmentsJson?.let {
+            val type = object : TypeToken<List<AppointmentModel>>() {}.type
+            appointmentsList.addAll(Gson().fromJson(it, type))
+        }
 
         return appointmentsList
+    }
+
+    private fun retrieveDoctors(): List<DoctorModel> {
+        val sharedPreferences = requireContext().getSharedPreferences("Doctors", Context.MODE_PRIVATE)
+        val doctorsJson = sharedPreferences.getString("doctorsKey", null)
+        var doctors: MutableList<DoctorModel> = mutableListOf()
+
+        doctorsJson?.let {
+            val type = object : TypeToken<List<DoctorModel>>() {}.type
+            doctors.addAll(Gson().fromJson(it, type))
+        }
+        return doctors
     }
 
     private fun saveListAppointments(appointmentsList: List<AppointmentModel>) {
@@ -167,17 +188,35 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
 
         val calendar = Calendar.getInstance()
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-
+        val current: Date = Date()
         calendar.time = Date() // Set calendar to today
 
-        // Generate timestamps for tomorrow and the day after tomorrow
-        for (i in 0 until 2) {
+
+        // Resolve first day for compatibility
+        if (this.reserved_num_day_ahead > 0) {
+            calendar.add(Calendar.DAY_OF_MONTH, this.reserved_num_day_ahead)
+        }
+        val calendar_starthour = max(calendar.get(Calendar.HOUR), this.min_hour)
+        val year_t = calendar.get(Calendar.YEAR)
+        val month_t = calendar.get(Calendar.MONTH)
+        val day_t = calendar.get(Calendar.DAY_OF_MONTH)
+        for (h in calendar_starthour until this.max_hour) {
+            for (m in 0 until 60 step this.minute_interval) {
+                calendar.set(year_t, month_t, day_t, h, m)
+                val timestamp = sdf.format(calendar.time)
+                timeSlots.add(timestamp)
+            }
+        }
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
+
+        // Generate timestamps from day 2 onward
+        for (i in 1 until (this.num_days-1)) {
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
             for (hour in 8 until 17) {
-                for (min in 0 until 60 step 5) {
+                for (min in 0 until 60 step 15) {
                     calendar.set(year, month, day, hour, min)
                     val timestamp = sdf.format(calendar.time)
                     timeSlots.add(timestamp)
@@ -202,8 +241,8 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
 
     override fun onRemoveClick(appointment: AppointmentModel) {
         appointmentsList.remove(appointment)
-//        saveListAppointments(appointmentsList)
-        appointmentViewModel.deleteAppointmentsById(appointment.appointmentId)
+        saveListAppointments(appointmentsList)
+//        appointmentViewModel.deleteAppointmentsById(appointment.appointmentId)
         adapter.updateList(appointmentsList)
         updateUIVisibility()
     }

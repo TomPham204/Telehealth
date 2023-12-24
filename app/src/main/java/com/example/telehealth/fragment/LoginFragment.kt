@@ -1,12 +1,14 @@
 package com.example.telehealth.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.telehealth.AdminActivity
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
@@ -68,7 +70,10 @@ class LoginFragment : Fragment() {
             saveLoginStatus(user.userId)
 
             if(user.functionality=="ADMIN") {
-                (activity as? MainActivity)?.replaceFragment(AdminFragment())
+                val intent = Intent(requireActivity(), AdminActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
             } else {
                 (activity as? MainActivity)?.replaceFragment(ProfileFragment())
             }

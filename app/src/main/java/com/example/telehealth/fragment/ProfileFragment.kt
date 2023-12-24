@@ -36,14 +36,11 @@ class ProfileFragment : Fragment() {
         }
 
         binding.logoutButton.setOnClickListener {
-            fun saveLoginStatus(userId: String) {
                 val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
                 with(sharedPreferences.edit()) {
-                    putString("USER_ID", userId)
+                    putString("USER_ID", null)
                     apply()
                 }
-            }
-            saveLoginStatus("")
             (activity as? MainActivity)?.replaceFragment(LoginFragment())
         }
     }

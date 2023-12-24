@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_profile"
-        android:title="Profile"
+        android:title="Users"
         android:icon="@drawable/profile_icon" />
     <item
         android:id="@+id/menu_appointment"
         android:title="Appointments"
         android:icon="@drawable/appointment_icon" />
-<!--    <item-->
-<!--        android:id="@+id/menu_video"-->
-<!--        android:title="Video Consultation"-->
-<!--        android:icon="@drawable/video_icon" />-->
+    <item
+        android:id="@+id/menu_logout"
+        android:title="Logout"
+        android:icon="@drawable/exit_icon" />
 </menu>

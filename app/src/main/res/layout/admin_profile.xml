@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_alignParentBottom="true">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin management"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete doctor below"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/doctorsList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#CCCCCC" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new doctor below"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/emailSignupText"
@@ -16,7 +43,7 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:text="admin@gmail.com"
+            android:text="doctor@gmail.com"
             android:layout_marginBottom="16dp"/>
 
         <EditText
@@ -24,24 +51,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
-            android:text="admin"
+            android:text="doctor"
             android:inputType="textPassword"
             android:layout_marginBottom="16dp"/>
-
-        <Spinner
-            android:id="@+id/functionalitySignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/functionality_options"
-            android:layout_marginBottom="16dp"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#CCCCCC"
-            android:layout_marginBottom="30dp"
-            android:layout_marginTop="30dp"/>
-
         <EditText
             android:id="@+id/nameSignupText"
             android:layout_width="match_parent"
@@ -51,10 +63,20 @@
             android:layout_marginBottom="16dp"/>
 
         <EditText
+            android:id="@+id/specialty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Specialty"
+            android:text="Cardiology"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
             android:id="@+id/addressSignupText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Address"
+            android:text="address"
             android:inputType="textPostalAddress"
             android:layout_marginBottom="16dp"/>
 
@@ -74,34 +96,11 @@
             android:entries="@array/gender_options"
             android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/descriptionSignupText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description"
-            android:text="No description"
-            android:inputType="textMultiLine"
-            android:layout_marginBottom="16dp"/>
-
         <Button
-            android:id="@+id/signupButton"
+            android:id="@+id/addDoctorButtonAdmin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Signup"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#CCCCCC"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"/>
-
-        <Button
-            android:id="@+id/toLoginButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Return to login"/>
-
-
+            android:layout_marginTop="5dp"
+            android:text="Add Doctor"/>
     </LinearLayout>
 </layout>
