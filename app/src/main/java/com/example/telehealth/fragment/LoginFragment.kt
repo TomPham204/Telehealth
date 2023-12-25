@@ -6,12 +6,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.telehealth.AdminActivity
 import com.example.telehealth.MainActivity
+import com.example.telehealth.R
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.Date
 
 class LoginFragment : Fragment() {
@@ -43,7 +47,26 @@ class LoginFragment : Fragment() {
             return ProfileModel("0", "admin@admin.admin","admin","ADMIN","admin","", Date("1/1/2001"),"MALE","")
         }
 
+        fun retrieveUsers(): MutableList<ProfileModel> {
+            val usersList = mutableListOf<ProfileModel>()
+            val sharedPreferences = requireContext().getSharedPreferences("Users", Context.MODE_PRIVATE)
+            val usersJson = sharedPreferences.getString("usersKey", null)
+
+            usersJson?.let {
+                val type = object : TypeToken<List<ProfileModel>>() {}.type
+                usersList.addAll(Gson().fromJson(it, type))
+            }
+
+            return usersList
+        }
+
         try {
+            val users = retrieveUsers()
+            for(i in users) {
+                if(i.email==email && i.password==password) {
+                    return i
+                }
+            }
             return null
         } catch (error: Exception) {
             return null
@@ -60,8 +83,8 @@ class LoginFragment : Fragment() {
 
     private fun processLogin() {
         // retrieve email and password from the login form
-        val email = binding.emailLoginText.text.toString()
-        val password = binding.passwordLoginText.text.toString()
+        val email = view?.findViewById<EditText>(R.id.emailLoginText)?.text.toString()
+        val password = view?.findViewById<EditText>(R.id.passwordLoginText)?.text.toString()
 
         val user=validateCredential(email, password)
 
