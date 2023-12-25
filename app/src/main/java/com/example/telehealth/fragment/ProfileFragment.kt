@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.ProfileFragmentBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -36,13 +38,17 @@ class ProfileFragment : Fragment() {
         }
 
         binding.logoutButton.setOnClickListener {
-                val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-                with(sharedPreferences.edit()) {
-                    putString("USER_ID", null)
-                    apply()
-                }
-            (activity as? MainActivity)?.replaceFragment(LoginFragment())
+                logout()
         }
+    }
+
+    private fun logout() {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("USER_ID", null)
+            apply()
+        }
+        (activity as? MainActivity)?.replaceFragment(LoginFragment())
     }
 
     private fun loadProfileData() {
@@ -108,7 +114,36 @@ class ProfileFragment : Fragment() {
     private fun getUserProfile(): ProfileModel {
         // Implement the logic to retrieve the user profile
         // This might involve a database query or a network request
-        val user=ProfileModel(
+
+        fun getUsers(): MutableList<ProfileModel> {
+            val usersList = mutableListOf<ProfileModel>()
+            val sharedPreferences = requireContext().getSharedPreferences("Users", Context.MODE_PRIVATE)
+            val usersJson = sharedPreferences.getString("usersKey", null)
+
+            usersJson?.let {
+                val type = object : TypeToken<List<ProfileModel>>() {}.type
+                usersList.addAll(Gson().fromJson(it, type))
+            }
+
+            return usersList
+        }
+
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val currentUserId = sharedPreferences.getString("USER_ID", null)
+
+        val users = getUsers()
+
+        val user = users.filter { i: ProfileModel -> i.userId == currentUserId }
+
+        if(user.isEmpty()) {
+            logout()
+        }
+        else {
+            return user[0]
+        }
+
+        // mock data to test UI
+        return ProfileModel(
             userId = "abc",
             email = "abc",
             functionality = "USER",
@@ -119,7 +154,6 @@ class ProfileFragment : Fragment() {
             description = "abc",
             password = "abc"
         )
-        return user
     }
 
     private fun updateProfile(profile: ProfileModel) {

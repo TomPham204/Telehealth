@@ -8,12 +8,15 @@ import com.example.telehealth.fragment.LoginFragment
 import com.example.telehealth.fragment.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+import com.google.firebase.FirebaseApp
+
 class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        FirebaseApp.initializeApp(this)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
@@ -45,4 +48,5 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
     }
+
 }
