@@ -13,8 +13,6 @@
             android:id="@+id/editTextId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
             android:textSize="18sp"
             android:layout_marginBottom="8dp"/>
 
@@ -63,12 +61,10 @@
             android:textSize="18sp"
             android:layout_marginBottom="8dp"/>
 
-        <EditText
+        <TextView
             android:id="@+id/editTextDateOfBirth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Date of Birth (yyyy-MM-dd)"
-            android:inputType="date"
             android:textSize="18sp"
             android:layout_marginBottom="8dp"/>
 

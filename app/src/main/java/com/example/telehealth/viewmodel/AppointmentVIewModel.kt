@@ -1,37 +1,22 @@
 package com.example.telehealth.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.telehealth.data.dataclass.AppointmentModel
 import com.example.telehealth.data.repository.AppointmentRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-public class AppointmentViewModel(private val repository: AppointmentRepository) : ViewModel() {
+class AppointmentViewModel(context: Context) : ViewModel() {
+    private val repository: AppointmentRepository = AppointmentRepository(context)
 
-    fun getAppointmentsByUser(userId: String): List<AppointmentModel> {
-        return repository.getAppointmentsByUser(userId)
+    fun getAllAppointments(): List<AppointmentModel> {
+        return repository.getAppointments()
     }
 
-    fun getAppointmentsByStatusAdmin(status: String): List<AppointmentModel> {
-        return repository.getAppointmentsByStatusAdmin(status)
+    fun getPendingAppointments(): List<AppointmentModel> {
+        return repository.getAppointments().filter { i: AppointmentModel -> i.status == "PENDING" }
     }
 
-    fun insertAppointment(appointment: AppointmentModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insertAppointment(appointment)
-        }
-    }
-
-    fun updateAppointment(appointment: AppointmentModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.updateAppointment(appointment)
-        }
-    }
-
-    fun deleteAppointmentsById(id: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAppointmentsById(id)
-        }
+    fun setAppointments(appointments: List<AppointmentModel>) {
+        return repository.setAppointments(appointments)
     }
 }

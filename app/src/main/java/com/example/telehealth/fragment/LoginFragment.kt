@@ -1,6 +1,5 @@
 package com.example.telehealth.fragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,22 +8,26 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.telehealth.AdminActivity
 import com.example.telehealth.MainActivity
 import com.example.telehealth.R
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.telehealth.viewmodel.ProfileViewModel
 import java.util.Date
 
 class LoginFragment : Fragment() {
 
     private var _binding: LoginScreenBinding? = null
     private val binding get() = _binding!!
+    private lateinit var profileViewModel: ProfileViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = LoginScreenBinding.inflate(inflater, container, false)
+        val profileFactory = ViewModelFactory(requireContext())
+        profileViewModel = ViewModelProvider(this, profileFactory)[ProfileViewModel::class.java]
+
         return binding.root
     }
 
@@ -41,27 +44,12 @@ class LoginFragment : Fragment() {
     }
 
     private fun validateCredential(email: String, password: String): ProfileModel? {
-        // call DB to check if credential is correct and exist a user
-        // return the user if exists
-        if(email=="admin@admin.admin" && password=="admin") {
-            return ProfileModel("0", "admin@admin.admin","admin","ADMIN","admin","", Date("1/1/2001"),"MALE","")
-        }
-
-        fun retrieveUsers(): MutableList<ProfileModel> {
-            val usersList = mutableListOf<ProfileModel>()
-            val sharedPreferences = requireContext().getSharedPreferences("Users", Context.MODE_PRIVATE)
-            val usersJson = sharedPreferences.getString("usersKey", null)
-
-            usersJson?.let {
-                val type = object : TypeToken<List<ProfileModel>>() {}.type
-                usersList.addAll(Gson().fromJson(it, type))
-            }
-
-            return usersList
+        if(email=="admin@gmail.com" && password=="test") {
+            return ProfileModel("0", "admin@gmail.com","test","ADMIN","admin-name","admin addr", Date("1/1/2001"),"MALE","")
         }
 
         try {
-            val users = retrieveUsers()
+            val users = profileViewModel.getAllProfiles()
             for(i in users) {
                 if(i.email==email && i.password==password) {
                     return i
@@ -74,11 +62,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun saveLoginStatus(userId: String) {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putString("USER_ID", userId)
-            apply()
-        }
+        profileViewModel.setCurrentId(userId)
     }
 
     private fun processLogin() {

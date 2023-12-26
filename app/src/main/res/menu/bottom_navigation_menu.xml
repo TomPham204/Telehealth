@@ -8,8 +8,8 @@
         android:id="@+id/menu_appointment"
         android:title="Appointments"
         android:icon="@drawable/appointment_icon" />
-<!--    <item-->
-<!--        android:id="@+id/menu_video"-->
-<!--        android:title="Video Consultation"-->
-<!--        android:icon="@drawable/video_icon" />-->
+    <item
+        android:id="@+id/menu_chat"
+        android:title="Video Consultation"
+        android:icon="@drawable/chat_icon" />
 </menu>
