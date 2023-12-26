@@ -1,19 +1,17 @@
 package com.example.telehealth.fragment
 
-import android.content.Context
 import android.net.ParseException
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.SignupScreenBinding
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.telehealth.viewmodel.ProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,9 +21,13 @@ class SignupFragment : Fragment() {
 
     private var _binding: SignupScreenBinding? = null
     private val binding get() = _binding!!
+    private lateinit var profileViewModel: ProfileViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = SignupScreenBinding.inflate(inflater, container, false)
+        val profileFactory = ViewModelFactory(requireContext())
+        profileViewModel = ViewModelProvider(this, profileFactory)[ProfileViewModel::class.java]
+
         return binding.root
     }
 
@@ -61,7 +63,6 @@ class SignupFragment : Fragment() {
 
         // check if user exists
         var currentUsers = retrieveUsers()
-        Log.d("user", currentUsers.toString())
 
         for (i in currentUsers) {
             if(i.email.equals(email, true)) {
@@ -88,26 +89,11 @@ class SignupFragment : Fragment() {
     }
 
     private fun retrieveUsers(): MutableList<ProfileModel> {
-        val usersList = mutableListOf<ProfileModel>()
-        val sharedPreferences = requireContext().getSharedPreferences("Users", Context.MODE_PRIVATE)
-        val usersJson = sharedPreferences.getString("usersKey", null)
-
-        usersJson?.let {
-            val type = object : TypeToken<List<ProfileModel>>() {}.type
-            usersList.addAll(Gson().fromJson(it, type))
-        }
-
-        return usersList
+        return profileViewModel.getAllProfiles().toMutableList()
     }
 
     private fun saveUsers(newList: List<ProfileModel>) {
-        val sharedPreferences = requireContext().getSharedPreferences("Users", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(newList)
-        editor.putString("usersKey", json)
-        editor.apply()
-        Log.d("user save", "saved")
+        profileViewModel.setProfiles(newList)
     }
 
     private fun navigateToLogin() {

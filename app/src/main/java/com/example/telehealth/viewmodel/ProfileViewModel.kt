@@ -1,36 +1,35 @@
 package com.example.telehealth.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.data.repository.ProfileRepository
-import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() {
-
+class ProfileViewModel(context: Context) : ViewModel() {
+    private val repository: ProfileRepository = ProfileRepository(context)
     fun getProfileById(userId: String): ProfileModel? {
         return repository.getProfileById(userId)
     }
 
-    fun getTokenById(userId: String): String? {
-        return repository.getTokenById(userId)
+    fun getAllProfiles(): List<ProfileModel> {
+        return repository.getProfiles()
     }
 
-    fun insertProfile(profile: ProfileModel) {
-        viewModelScope.launch {
-            repository.insertProfile(profile)
-        }
+    fun setProfiles(profiles: List<ProfileModel>) {
+        return repository.setProfiles(profiles)
     }
 
-    fun updateProfile(profile: ProfileModel) {
-        viewModelScope.launch {
-            repository.updateProfile(profile)
-        }
+    fun getCurrentId(): String? {
+        return repository.getCurrentId()
     }
 
-    fun deleteProfile(userId: String) {
-        viewModelScope.launch {
-            repository.deleteProfile(userId)
-        }
+    fun setCurrentId(id: String) {
+        return repository.setCurrentId(id)
+    }
+
+    fun getCurrentProfile(): ProfileModel? {
+        val savedId = getCurrentId() ?: return null
+        val user = getAllProfiles().filter { i: ProfileModel -> i.userId == savedId }
+        return if(user.isEmpty()) null else user[0]
     }
 }

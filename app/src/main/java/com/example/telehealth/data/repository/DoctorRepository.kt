@@ -1,25 +1,41 @@
 package com.example.telehealth.data.repository
 
-import com.example.telehealth.data.dao.DoctorDao
+import android.content.Context
 import com.example.telehealth.data.dataclass.DoctorModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class DoctorRepository(private val doctorDao: DoctorDao) {
+class DoctorRepository(private val context: Context) {
+    fun getDoctors(): MutableList<DoctorModel> {
+        val sharedPreferences = context.getSharedPreferences("Doctors", Context.MODE_PRIVATE)
+        val doctorsJson = sharedPreferences.getString("doctorsKey", null)
+        var doctors= mutableListOf<DoctorModel>()
 
-    fun getAllDoctors(): List<DoctorModel> {
-        return listOf(
-            DoctorModel("abc","Dr. Smith", "Cardiology"),
-            DoctorModel("xyz","Dr. Johnson", "Dermatology"),
-        )
-        return doctorDao.getAllDoctors()
+        doctorsJson?.let {
+            val type = object : TypeToken<List<DoctorModel>>() {}.type
+            doctors.addAll(Gson().fromJson(it, type))
+        }
+
+        return doctors
     }
 
-    fun getDoctorById(doctorId: String): DoctorModel {
-        return doctorDao.getDoctorById(doctorId)
+    fun getDoctorById(id: String): DoctorModel? {
+        val doctors = getDoctors()
+        val res = doctors.filter { i: DoctorModel -> i.doctorId == id}
+
+        return if(res.isNotEmpty()) {
+            res[0]
+        } else {
+            null
+        }
     }
 
-    suspend fun insertDoctor(doctor: DoctorModel) {
-        doctorDao.insertDoctor(doctor)
+    fun setDoctors(doctors: List<DoctorModel>) {
+        val sharedPreferences = context.getSharedPreferences("Doctors", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(doctors)
+        editor.putString("doctorsKey", json)
+        editor.apply()
     }
-
-    // Additional methods for updating or deleting doctors can be added here
 }

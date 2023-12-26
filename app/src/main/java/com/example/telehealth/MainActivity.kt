@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.telehealth.fragment.AppointmentFragment
+import com.example.telehealth.fragment.ChatFragment
 import com.example.telehealth.fragment.LoginFragment
 import com.example.telehealth.fragment.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -37,6 +38,11 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(AppointmentFragment())
                     true
                 }
+                R.id.menu_chat -> {
+                    replaceFragment(ChatFragment())
+                    true
+                }
+
                 // Add logic for other menu items if needed
                 else -> false
             }

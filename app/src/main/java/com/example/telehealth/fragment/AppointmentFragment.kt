@@ -1,6 +1,5 @@
 package com.example.telehealth.fragment
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -13,6 +12,7 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telehealth.R
@@ -24,8 +24,9 @@ import com.example.telehealth.adapter.OnRemoveClickListener
 import com.example.telehealth.adapter.OnVideoCallClickListener
 import com.example.telehealth.data.dataclass.AppointmentModel
 import com.example.telehealth.data.dataclass.DoctorModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.telehealth.viewmodel.AppointmentViewModel
+import com.example.telehealth.viewmodel.DoctorViewModel
+import com.example.telehealth.viewmodel.ProfileViewModel
 import java.lang.Integer.max
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -38,6 +39,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var appointmentsList: MutableList<AppointmentModel>
     private lateinit var adapter: AppointmentAdapter
+    private lateinit var appointmentViewModel: AppointmentViewModel
+    private lateinit var doctorViewModel: DoctorViewModel
+    private lateinit var profileViewModel: ProfileViewModel
 
     // Datetime Control
     private val reserved_num_day_ahead: Int = 1
@@ -46,26 +50,31 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     private val max_hour: Int = 17
     private val minute_interval: Int = 15
 
-//    private lateinit var appointmentViewModel: AppointmentViewModel
-//    private lateinit var doctorViewModel: DoctorViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        appointmentViewModel = ViewModelProvider(requireActivity())[AppointmentViewModel::class.java]
-//        doctorViewModel = ViewModelProvider(requireActivity())[DoctorViewModel::class.java]
+        // init the viewmodels
+        val doctorFactory = DoctorViewModelFactory(requireContext())
+        doctorViewModel = ViewModelProvider(this, doctorFactory)[DoctorViewModel::class.java]
 
+        val appointmentFactory = AppointmentViewModelFactory(requireContext())
+        appointmentViewModel = ViewModelProvider(this, appointmentFactory)[AppointmentViewModel::class.java]
+
+        val profileFactory = ProfileViewModelFactory(requireContext())
+        profileViewModel = ViewModelProvider(this, profileFactory)[ProfileViewModel::class.java]
+
+
+        //inflate the fragment UI
         val view = inflater.inflate(R.layout.appointment_fragment, container, false)
-
-        sharedPreferences = requireActivity().getSharedPreferences("appointments", Context.MODE_PRIVATE)
-        appointmentsList = retrieveAppointments()
 
         val doctorSpinner: Spinner = view.findViewById(R.id.doctorSpinner)
         val timeSpinner: Spinner = view.findViewById(R.id.timeSpinner)
         val saveButton: Button = view.findViewById(R.id.appointmentBtn)
         val recyclerView: RecyclerView = view.findViewById(R.id.appointmentsList)
 
+
+        //get list of time choice for the dropdown
         val timeSlots = generateTimeSlots()
         val timeAdapter: ArrayAdapter<String> = ArrayAdapter(
             requireContext(),
@@ -74,8 +83,8 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         )
         timeSpinner.adapter = timeAdapter
 
-        // get the list of doctor
-//        val doctorsList = doctorViewModel.getAllDoctors()
+
+        // get the list of doctor for the dropdown
         val doctorsList = retrieveDoctors()
 
         val doctorsDropdownList = doctorsList.map { doctor ->
@@ -84,7 +93,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         val doctorAdapter = DoctorAdapter(requireContext(), doctorsDropdownList)
         doctorSpinner.adapter = doctorAdapter
 
-        // Set up RecyclerView
+
+        //get list of appointment to populate the list on UI
+        appointmentsList = retrieveAppointments()
         adapter = AppointmentAdapter(appointmentsList, this as OnRemoveClickListener, this as OnVideoCallClickListener)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
@@ -123,11 +134,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         val selectedTime = dateFormat.parse(view?.findViewById<Spinner>(R.id.timeSpinner)?.selectedItem.toString().trim())
         val id=UUID.randomUUID().toString()
-        val userId=checkLoginStatus()
+        val userId=profileViewModel.getCurrentId()!!
 
-        // write to DB
         val newAppointment = AppointmentModel(id, userId, selectedDoctor.doctor.doctorId, selectedDoctor.doctor.doctorName, selectedTime, "PENDING")
-//        appointmentViewModel.insertAppointment(newAppointment)
 
         //write to local storage
         // Add new appointment to the existing list
@@ -144,43 +153,15 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
     }
 
     private fun retrieveAppointments(): MutableList<AppointmentModel> {
-        val appointmentsList = mutableListOf<AppointmentModel>()
-        // get from db
-//        val data = appointmentViewModel.getAppointmentsByUser(checkLoginStatus())
-//        appointmentsList.addAll(data)
-
-        // get from local storage
-        val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
-        val appointmentsJson = sharedPreferences.getString("appointmentsKey", null)
-
-        appointmentsJson?.let {
-            val type = object : TypeToken<List<AppointmentModel>>() {}.type
-            appointmentsList.addAll(Gson().fromJson(it, type))
-        }
-
-        return appointmentsList
+        return appointmentViewModel.getAllAppointments().toMutableList()
     }
 
     private fun retrieveDoctors(): List<DoctorModel> {
-        val sharedPreferences = requireContext().getSharedPreferences("Doctors", Context.MODE_PRIVATE)
-        val doctorsJson = sharedPreferences.getString("doctorsKey", null)
-        var doctors: MutableList<DoctorModel> = mutableListOf()
-
-        doctorsJson?.let {
-            val type = object : TypeToken<List<DoctorModel>>() {}.type
-            doctors.addAll(Gson().fromJson(it, type))
-        }
-        return doctors
+        return doctorViewModel.getAllDoctors()
     }
 
     private fun saveListAppointments(appointmentsList: List<AppointmentModel>) {
-        // save to local storage
-        val sharedPreferences = requireContext().getSharedPreferences("Appointments", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(appointmentsList)
-        editor.putString("appointmentsKey", json)
-        editor.apply()
+        appointmentViewModel.setAppointments(appointmentsList)
     }
 
     private fun generateTimeSlots(): ArrayList<String> {
@@ -228,21 +209,9 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         return timeSlots
     }
 
-    private fun checkLoginStatus(): String {
-        return try {
-            val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-            val id=sharedPreferences.getString("USER_ID", "")
-            id!!
-        } catch(error: Exception) {
-            Log.d("checkLoginStatus", error.toString())
-            ""
-        }
-    }
-
     override fun onRemoveClick(appointment: AppointmentModel) {
         appointmentsList.remove(appointment)
         saveListAppointments(appointmentsList)
-//        appointmentViewModel.deleteAppointmentsById(appointment.appointmentId)
         adapter.updateList(appointmentsList)
         updateUIVisibility()
     }

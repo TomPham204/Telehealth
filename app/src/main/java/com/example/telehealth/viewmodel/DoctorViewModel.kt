@@ -1,26 +1,22 @@
 package com.example.telehealth.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.telehealth.data.dataclass.DoctorModel
 import com.example.telehealth.data.repository.DoctorRepository
-import kotlinx.coroutines.launch
 
-class DoctorViewModel(private val repository: DoctorRepository) : ViewModel() {
+class DoctorViewModel(context: Context) : ViewModel() {
+    private val repository: DoctorRepository = DoctorRepository(context)
 
     fun getAllDoctors(): List<DoctorModel> {
-        return repository.getAllDoctors()
+        return repository.getDoctors()
     }
 
-    fun getDoctorById(doctorId: String): DoctorModel {
+    fun getDoctorById(doctorId: String): DoctorModel? {
         return repository.getDoctorById(doctorId)
     }
 
-    fun insertDoctor(doctor: DoctorModel) {
-        viewModelScope.launch {
-            repository.insertDoctor(doctor)
-        }
+    fun setDoctors(doctors: List<DoctorModel>) {
+        return repository.setDoctors(doctors)
     }
-
-    // Additional methods for updating or deleting doctors can be added here
 }
