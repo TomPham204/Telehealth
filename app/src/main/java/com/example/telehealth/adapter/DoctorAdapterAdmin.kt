@@ -1,6 +1,5 @@
 package com.example.telehealth.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ interface OnDeleteListener {
 }
 class DoctorAdapterAdmin(private var doctors: List<DoctorModel>, private val onDeleteListener: OnDeleteListener): RecyclerView.Adapter<DoctorAdapterAdmin.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d("doctors 99", "doctor at adapter ${doctors.toString()}")
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_doctor_admin, parent, false)
         return ViewHolder(view)

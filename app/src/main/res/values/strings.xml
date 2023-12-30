@@ -7,7 +7,7 @@
     <string name="facebook_client_token">1d5056283cedd607a078496b46320279</string>
     <string-array name="functionality_options">
         <item>USER</item>
-        <item>DOCTOR</item>
+<!--        <item>DOCTOR</item>-->
     </string-array>
     <string-array name="gender_options">
         <item>MALE</item>

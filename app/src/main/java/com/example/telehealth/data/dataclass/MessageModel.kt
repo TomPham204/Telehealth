@@ -5,4 +5,6 @@ data class MessageModel(
     val senderId: String = "",
     val receiverId: String = "",
     val timestamp: Long = System.currentTimeMillis()
-)
+) {
+    constructor() : this("", "", "",0)
+}

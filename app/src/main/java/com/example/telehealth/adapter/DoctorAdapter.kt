@@ -13,6 +13,7 @@ data class DoctorSpinnerItem(
     val displayText: String,
     val doctor: DoctorModel
 )
+
 class DoctorAdapter(context: Context, doctors: List<DoctorSpinnerItem>) :
     ArrayAdapter<DoctorSpinnerItem>(context, R.layout.doctor_spinner_item, doctors) {
 
@@ -28,6 +29,12 @@ class DoctorAdapter(context: Context, doctors: List<DoctorSpinnerItem>) :
         textView.text = doctor?.displayText
 
         return view
+    }
+
+    fun updateList(newList: List<DoctorSpinnerItem>) {
+        clear()
+        addAll(newList)
+        notifyDataSetChanged()
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
