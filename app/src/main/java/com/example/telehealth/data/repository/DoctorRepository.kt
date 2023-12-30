@@ -1,41 +1,51 @@
 package com.example.telehealth.data.repository
 
 import android.content.Context
+import android.util.Log
+import com.example.telehealth.data.database.FirestoreDB
 import com.example.telehealth.data.dataclass.DoctorModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.tasks.await
 
 class DoctorRepository(private val context: Context) {
-    fun getDoctors(): MutableList<DoctorModel> {
-        val sharedPreferences = context.getSharedPreferences("Doctors", Context.MODE_PRIVATE)
-        val doctorsJson = sharedPreferences.getString("doctorsKey", null)
-        var doctors= mutableListOf<DoctorModel>()
+    // FirestoreDB has singleton, always return the same instance of db manager
+    private val doctorsCollection = FirestoreDB.instance.collection("DOCTOR")
 
-        doctorsJson?.let {
-            val type = object : TypeToken<List<DoctorModel>>() {}.type
-            doctors.addAll(Gson().fromJson(it, type))
+    suspend fun getDoctors(): List<DoctorModel> {
+        return try {
+            doctorsCollection.get().await().map { document ->
+                document.toObject()
+            }
+        } catch (e: Exception) {
+            Log.e("DoctorRepository", "Error fetching doctors", e)
+            listOf()
         }
-
-        return doctors
     }
 
-    fun getDoctorById(id: String): DoctorModel? {
-        val doctors = getDoctors()
-        val res = doctors.filter { i: DoctorModel -> i.doctorId == id}
-
-        return if(res.isNotEmpty()) {
-            res[0]
-        } else {
+    suspend fun getDoctorById(id: String): DoctorModel? {
+        return try {
+            doctorsCollection.document(id).get().await().toObject<DoctorModel>()
+        } catch (e: Exception) {
             null
         }
     }
 
-    fun setDoctors(doctors: List<DoctorModel>) {
-        val sharedPreferences = context.getSharedPreferences("Doctors", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(doctors)
-        editor.putString("doctorsKey", json)
-        editor.apply()
+    suspend fun setDoctors(doctors: List<DoctorModel>) {
+        // In Firestore, each doctor needs to be added individually
+        doctors.forEach { doctor ->
+            doctor.doctorId?.let { id ->
+                doctorsCollection.document(id).set(doctor).await()
+            }
+        }
+    }
+
+    suspend fun addOrUpdateDoctor(doctor: DoctorModel) {
+        doctor.doctorId?.let { id ->
+            doctorsCollection.document(id).set(doctor).await()
+        }
+    }
+
+    suspend fun deleteDoctor(doctorId: String) {
+        doctorsCollection.document(doctorId).delete().await()
     }
 }

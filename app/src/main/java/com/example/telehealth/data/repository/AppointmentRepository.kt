@@ -1,30 +1,34 @@
 package com.example.telehealth.data.repository
 
 import android.content.Context
+import android.util.Log
+import com.example.telehealth.data.database.FirestoreDB
 import com.example.telehealth.data.dataclass.AppointmentModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.tasks.await
 
 class AppointmentRepository(private val context: Context) {
-    fun getAppointments(): MutableList<AppointmentModel> {
-        val sharedPreferences = context.getSharedPreferences("Appointments", Context.MODE_PRIVATE)
-        val appointmentsJson = sharedPreferences.getString("appointmentsKey", null)
-        val appointments: MutableList<AppointmentModel> = mutableListOf()
+    // FirestoreDB has singleton, always return the same instance of db manager
+    private val appointmentsCollection = FirestoreDB.instance.collection("APPOINTMENT")
 
-        appointmentsJson?.let {
-            val type = object : TypeToken<List<AppointmentModel>>() {}.type
-            appointments.addAll(Gson().fromJson(it, type))
+    suspend fun getAppointments(): List<AppointmentModel> {
+        return try {
+            appointmentsCollection.get().await().map { document ->
+                document.toObject()
+            }
+        } catch (e: Exception) {
+            Log.e("AppointmentRepository", "Error fetching appointments", e)
+            listOf()
         }
-
-        return appointments
     }
 
-    fun setAppointments(appointments: List<AppointmentModel>) {
-        val sharedPreferences = context.getSharedPreferences("Appointments", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(appointments)
-        editor.putString("appointmentsKey", json)
-        editor.apply()
+    suspend fun addOrUpdateAppointment(ap: AppointmentModel) {
+        ap.appointmentId?.let { id ->
+            appointmentsCollection.document(id).set(ap).await()
+        }
+    }
+
+    suspend fun deleteAppointment(apId: String) {
+        appointmentsCollection.document(apId).delete().await()
     }
 }

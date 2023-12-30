@@ -36,7 +36,9 @@ class AdminAppointmentFragment : Fragment(), OnRejectListener, OnAcceptListener 
 
 
         // now prepare the appointment list on UI for admin
-        getPendingAppointments()
+        observeAps()
+        appointmentViewModel.getPendingAppointments()
+
         val appointmentsList: RecyclerView = view.findViewById(R.id.appointmentsList)
         appointmentsAdapter = AppointmentAdapterAdmin(pendingAp, this as OnAcceptListener, this as OnRejectListener)
         appointmentsList.layoutManager = LinearLayoutManager(context)
@@ -46,11 +48,6 @@ class AdminAppointmentFragment : Fragment(), OnRejectListener, OnAcceptListener 
     }
 
     override fun onAccept(ap: AppointmentModel) {
-        for (i in pendingAp) {
-            if(i.appointmentId == ap.appointmentId) {
-                i.status="ACCEPTED"
-            }
-        }
         pendingAp = pendingAp.map {i: AppointmentModel ->
             if(i.appointmentId != ap.appointmentId) {
                 i
@@ -59,22 +56,26 @@ class AdminAppointmentFragment : Fragment(), OnRejectListener, OnAcceptListener 
                 i
             }
         }.toMutableList()
-        saveAppointments(pendingAp)
+        saveAppointments(ap)
         appointmentsAdapter.updateList(pendingAp)
     }
 
     override fun onReject(ap: AppointmentModel) {
         pendingAp= pendingAp.filter{ i: AppointmentModel -> i.appointmentId != ap.appointmentId}.toMutableList()
-        saveAppointments(pendingAp)
+        ap.status="REJECTED"
+        saveAppointments(ap)
         appointmentsAdapter.updateList(pendingAp)
     }
 
-    private fun getPendingAppointments() {
-        pendingAp = appointmentViewModel.getPendingAppointments().toMutableList()
+    private fun observeAps() {
+        appointmentViewModel.pendingAppointmentsLiveData.observe(viewLifecycleOwner) { aps ->
+            pendingAp = aps.toMutableList()
+            appointmentsAdapter.updateList(pendingAp)
+        }
     }
 
-    private fun saveAppointments(newList: List<AppointmentModel>) {
-        appointmentViewModel.setAppointments(newList)
+    private fun saveAppointments(ap: AppointmentModel) {
+        appointmentViewModel.addOrUpdateAppointment(ap)
     }
 }
 

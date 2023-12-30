@@ -9,7 +9,9 @@ import com.example.telehealth.R
 import com.example.telehealth.data.dataclass.AppointmentModel
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 interface OnRemoveClickListener {
     fun onRemoveClick(appointment: AppointmentModel)
@@ -50,7 +52,7 @@ class AppointmentAdapter(
 
         // Check if current time is within ±10 minutes of appointment time
         holder.buttonVideoCall.isEnabled =
-            appointmentDateTime != null && isWithinTimeRange(appointmentDateTime, currentTime)
+            appointmentDateTime != null && isWithinTimeRange(appointmentDateTime, currentTime) && currentItem.status=="ACCEPTED"
     }
 
     override fun getItemCount(): Int {

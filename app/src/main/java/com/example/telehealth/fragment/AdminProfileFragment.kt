@@ -51,7 +51,9 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
 
         // now prepare the doctors for admin screen
         //get all doctors using view model, then populate the doctor list on UI
-        getDoctors()
+        observeDoctors()
+        doctorViewModel.getAllDoctors()
+
         val doctorsList: RecyclerView = view.findViewById(R.id.doctorsList)
         doctorsAdapter = DoctorAdapterAdmin(doctors, this as OnDeleteListener)
         doctorsList.layoutManager = LinearLayoutManager(context)
@@ -68,16 +70,8 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
 
     override fun onDeleteDoctor(doctor: DoctorModel) {
         doctors = doctors.filter { i: DoctorModel -> i.doctorId != doctor.doctorId }.toMutableList()
-        setDoctors(doctors)
+        doctorViewModel.deleteDoctor(doctor.doctorId)
         doctorsAdapter.updateList(doctors)
-    }
-
-    private fun getDoctors() {
-        doctors=doctorViewModel.getAllDoctors().toMutableList()
-    }
-
-    private fun setDoctors(doctors: List<DoctorModel>) {
-        doctorViewModel.setDoctors(doctors)
     }
 
     private fun getUsers(): MutableList<ProfileModel> {
@@ -119,9 +113,17 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
         currentUsers.add(ProfileModel(id, email, password, functionality, name, address, dateOfBirth, gender, description))
         setUsers(currentUsers)
 
-        doctors.add(DoctorModel(id, name, specialty))
-        setDoctors(doctors)
+        val newDoctor = DoctorModel(id, name, specialty)
+        doctors.add(newDoctor)
+        doctorViewModel.addOrUpdateDoctor(newDoctor)
         doctorsAdapter.updateList(doctors)
+    }
+
+    private fun observeDoctors() {
+        doctorViewModel.doctorsLiveData.observe(viewLifecycleOwner) { doctorsList ->
+            doctors = doctorsList.toMutableList()
+            doctorsAdapter.updateList(doctors)
+        }
     }
 }
 
