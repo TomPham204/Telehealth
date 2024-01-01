@@ -25,10 +25,7 @@ class VideoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
 
-        val doctorId=intent.getStringExtra("DOCTOR_ID")
-        if(doctorId != null) {
-            channel=doctorId.toString()
-        }
+        channel=intent.getStringExtra("CHANNEL")!!
 
         val exitButton = AgoraButton(this)
         exitButton.setImageResource(R.drawable.exit_icon)

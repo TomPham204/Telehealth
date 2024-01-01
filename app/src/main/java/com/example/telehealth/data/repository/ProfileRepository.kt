@@ -1,42 +1,57 @@
 package com.example.telehealth.data.repository
 
 import android.content.Context
+import android.util.Log
+import com.example.telehealth.data.database.FirestoreDB
 import com.example.telehealth.data.dataclass.ProfileModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.tasks.await
 
 class ProfileRepository(private val context: Context) {
+    private val profileCollection = FirestoreDB.instance.collection("PROFILE")
 
-    fun getProfileById(userId: String): ProfileModel? {
-        val user = getProfiles().filter { i: ProfileModel -> i.userId == userId }
-
-        return if(user.isEmpty()) {
+    suspend fun getProfileById(userId: String): ProfileModel? {
+        return try {
+            val snapshot = profileCollection.document(userId).get().await()
+            snapshot.toObject<ProfileModel>()
+        } catch (e: Exception) {
             null
-        } else {
-            user[0]
         }
     }
 
-    fun getProfiles(): MutableList<ProfileModel> {
-        val usersList = mutableListOf<ProfileModel>()
-        val sharedPreferences = context.getSharedPreferences("Users", Context.MODE_PRIVATE)
-        val usersJson = sharedPreferences.getString("usersKey", null)
-
-        usersJson?.let {
-            val type = object : TypeToken<List<ProfileModel>>() {}.type
-            usersList.addAll(Gson().fromJson(it, type))
+    suspend fun getProfiles(): List<ProfileModel> {
+        return try {
+            profileCollection.get().await().mapNotNull { document ->
+                document.toObject<ProfileModel>()
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Error fetching profiles", e)
+            listOf()
         }
-
-        return usersList
     }
 
-    fun setProfiles(users: List<ProfileModel>) {
-        val sharedPreferences = context.getSharedPreferences("Users", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val gson = Gson()
-        val json = gson.toJson(users)
-        editor.putString("usersKey", json)
-        editor.apply()
+    suspend fun setProfiles(users: List<ProfileModel>) {
+        users.forEach { user ->
+            user.userId?.let { id ->
+                profileCollection.document(id).set(user).await()
+            }
+        }
+    }
+
+    suspend fun addOrUpdateProfile(user: ProfileModel) {
+        user.userId?.let { id ->
+            profileCollection.document(id).set(user).await()
+        }
+    }
+
+    suspend fun userExistsWithEmail(email: String): Boolean {
+        return try {
+            val querySnapshot = profileCollection.whereEqualTo("email", email).limit(1).get().await()
+            querySnapshot.documents.isNotEmpty()
+        } catch (e: Exception) {
+            // Log the exception or handle it as needed
+            false
+        }
     }
 
     fun getCurrentId(): String? {

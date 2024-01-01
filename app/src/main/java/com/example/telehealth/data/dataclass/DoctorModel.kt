@@ -5,6 +5,7 @@ data class DoctorModel(
     val doctorId: String,
     val doctorName: String,
     val specialty: String,
+    val channel: String
 ) {
-    constructor() : this("", "", "")
+    constructor() : this("", "", "","")
 }

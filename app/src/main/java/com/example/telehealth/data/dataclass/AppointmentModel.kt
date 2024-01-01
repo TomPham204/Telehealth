@@ -8,8 +8,9 @@ data class AppointmentModel(
     val userId: String,
     val doctorId: String,
     val doctorName: String,
+    val channel: String,
     val dateTime: Date,
     var status: String,
 ) {
-    constructor() : this("", "", "", "", Date(), "",)
+    constructor() : this("", "", "", "", "", Date(), "",)
 }

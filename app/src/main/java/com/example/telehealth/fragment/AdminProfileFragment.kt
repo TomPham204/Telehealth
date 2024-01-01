@@ -74,16 +74,10 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
         doctorsAdapter.updateList(doctors)
     }
 
-    private fun getUsers(): MutableList<ProfileModel> {
-        return profileViewModel.getAllProfiles().toMutableList()
-    }
-
-    private fun setUsers(users: List<ProfileModel>) {
-        profileViewModel.setProfiles(users)
-    }
-
     private fun createDoctor() {
         val id = UUID.randomUUID().toString()
+        var channel = 1
+        doctorViewModel.getLastIndex{idx -> channel=idx}
         val email = view?.findViewById<EditText>(R.id.emailSignupText)?.text.toString()
         val password = view?.findViewById<EditText>(R.id.passwordSignupText)?.text.toString()
         val name = view?.findViewById<EditText>(R.id.nameSignupText)?.text.toString()
@@ -102,18 +96,10 @@ class AdminProfileFragment : Fragment(), OnDeleteListener {
             return
         }
 
-        for (i in getUsers()) {
-            if(i.email.toString().equals(email, true)) {
-                Toast.makeText(context, "Email already used", Toast.LENGTH_LONG).show()
-                return
-            }
-        }
+        val newUser=ProfileModel(id, email, password, functionality, name, address, dateOfBirth, gender, description)
+        profileViewModel.addOrUpdateProfile(newUser)
 
-        var currentUsers=getUsers()
-        currentUsers.add(ProfileModel(id, email, password, functionality, name, address, dateOfBirth, gender, description))
-        setUsers(currentUsers)
-
-        val newDoctor = DoctorModel(id, name, specialty)
+        val newDoctor = DoctorModel(id, name, specialty, channel.toString())
         doctors.add(newDoctor)
         doctorViewModel.addOrUpdateDoctor(newDoctor)
         doctorsAdapter.updateList(doctors)
