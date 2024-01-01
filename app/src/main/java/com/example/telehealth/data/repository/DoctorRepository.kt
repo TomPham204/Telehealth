@@ -48,4 +48,11 @@ class DoctorRepository(private val context: Context) {
     suspend fun deleteDoctor(doctorId: String) {
         doctorsCollection.document(doctorId).delete().await()
     }
+
+    suspend fun getLastIndex(): Int {
+        return try {doctorsCollection.get().await().size()} catch(e: Exception) {
+            Log.e("DoctorRepository", "Error getting document count", e)
+            0
+        }
+    }
 }

@@ -10,6 +10,6 @@
         android:icon="@drawable/appointment_icon" />
     <item
         android:id="@+id/menu_chat"
-        android:title="Video Consultation"
+        android:title="Messages"
         android:icon="@drawable/chat_icon" />
 </menu>

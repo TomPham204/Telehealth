@@ -135,9 +135,10 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         val selectedTime = dateFormat.parse(view?.findViewById<Spinner>(R.id.timeSpinner)?.selectedItem.toString().trim())
         val id=UUID.randomUUID().toString()
+        val channel=selectedDoctor.doctor.channel
         val userId=profileViewModel.getCurrentId()!!
 
-        val newAppointment = AppointmentModel(id, userId, selectedDoctor.doctor.doctorId, selectedDoctor.doctor.doctorName, selectedTime, "PENDING")
+        val newAppointment = AppointmentModel(id, userId, selectedDoctor.doctor.doctorId, selectedDoctor.doctor.doctorName, channel, selectedTime, "PENDING")
 
         //write to local storage
         // Add new appointment to the existing list
@@ -233,7 +234,7 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         try {
 //            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://facebook.com/profile.php?id=${appointment.doctorId}"))
             val intent = Intent(requireContext(), VideoActivity::class.java)
-            intent.putExtra("DOCTOR_ID", appointment.doctorId)
+            intent.putExtra("CHANNEL", appointment.channel)
             startActivity(intent)
         } catch(e: Exception) {
             Log.d("startVideoActivity", e.toString())

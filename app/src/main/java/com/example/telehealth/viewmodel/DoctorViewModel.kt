@@ -57,4 +57,12 @@ class DoctorViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    fun getLastIndex(onComplete: (Int) -> Unit) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                onComplete(repository.getLastIndex())
+            }
+        }
+    }
 }

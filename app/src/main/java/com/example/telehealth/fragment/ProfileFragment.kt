@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.telehealth.MainActivity
@@ -32,7 +33,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadProfileData()
+        observeProfileData()
 
         binding.saveButton.setOnClickListener {
             saveProfileData()
@@ -52,9 +53,20 @@ class ProfileFragment : Fragment() {
         (activity as? MainActivity)?.replaceFragment(LoginFragment())
     }
 
-    private fun loadProfileData() {
-        val userProfile = getUserProfile()!!
+    private fun observeProfileData() {
+        // Assuming profileViewModel has a LiveData for the current profile
+        profileViewModel.currentProfile.observe(viewLifecycleOwner, Observer { userProfile ->
+            user = userProfile
+            if (userProfile != null) {
+                displayUserProfile(userProfile)
+            }
+        })
 
+        // Load the profile data
+        profileViewModel.getCurrentProfile()  // This should trigger LiveData update
+    }
+
+    private fun displayUserProfile(userProfile: ProfileModel) {
         binding.editTextId.text = userProfile.userId
         binding.editTextEmail.setText(userProfile.email)
         binding.editTextFunctionality.setText(userProfile.functionality)
@@ -100,25 +112,8 @@ class ProfileFragment : Fragment() {
         Toast.makeText(activity, "Profile updated", Toast.LENGTH_LONG).show()
     }
 
-    private fun getUserProfile(): ProfileModel? {
-        user = profileViewModel.getCurrentProfile()
-        return user
-    }
-
     private fun updateProfile(profile: ProfileModel) {
-        val usersList = getUsers().map { user ->
-            if (user.userId == profile.userId) profile else user
-        }
-        saveUsers(usersList)
-    }
-
-    private fun getUsers(): MutableList<ProfileModel> {
-        val usersList = profileViewModel.getAllProfiles().toMutableList()
-        return usersList
-    }
-
-    private fun saveUsers(users: List<ProfileModel>) {
-        profileViewModel.setProfiles(users)
+        profileViewModel.addOrUpdateProfile(profile)
     }
 
     override fun onDestroyView() {

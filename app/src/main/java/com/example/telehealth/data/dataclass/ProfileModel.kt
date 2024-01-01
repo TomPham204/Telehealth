@@ -19,4 +19,6 @@ data class ProfileModel(
     val dateOfBirth: Date,
     val gender: String,         // "MALE" or "FEMALE"
     val description: String
-)
+) {
+    constructor() : this("", "", "","","","",Date(),"","")
+}
