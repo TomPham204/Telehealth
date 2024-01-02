@@ -25,6 +25,15 @@ class AppointmentViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun getAppointmentsOfUser(userId: String) {
+        viewModelScope.launch {
+            val ap = withContext(Dispatchers.IO) {
+                repository.getAppointmentsOfUser(userId)
+            }
+            _appointmentsLiveData.postValue(ap)
+        }
+    }
+
     private val _pendingAppointmentsLiveData = MutableLiveData<List<AppointmentModel>>()
     val pendingAppointmentsLiveData: LiveData<List<AppointmentModel>> = _pendingAppointmentsLiveData
 
@@ -52,6 +61,18 @@ class AppointmentViewModel(context: Context) : ViewModel() {
             withContext(Dispatchers.IO) {
                 repository.deleteAppointment(apId)
             }
+        }
+    }
+
+    private val _doctorAppointmentsLiveData = MutableLiveData<List<AppointmentModel>>()
+    val doctorAppointmentsLiveData: LiveData<List<AppointmentModel>> = _doctorAppointmentsLiveData
+
+    fun getAllAppointmentsOfDoctor(doctorId: String) {
+        viewModelScope.launch {
+            val appointments = withContext(Dispatchers.IO) {
+                repository.getAppointmentsOfDoctor(doctorId)
+            }
+            _doctorAppointmentsLiveData.postValue(appointments)
         }
     }
 }
