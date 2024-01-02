@@ -41,6 +41,11 @@
                 <action android:name="android.intent.action.ADMIN" />
             </intent-filter>
         </activity>
+        <activity android:name=".DoctorActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DOCTOR" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

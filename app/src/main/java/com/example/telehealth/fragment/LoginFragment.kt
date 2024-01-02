@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.telehealth.AdminActivity
+import com.example.telehealth.DoctorActivity
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
@@ -89,7 +90,13 @@ class LoginFragment : Fragment() {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 requireActivity().finish()
-            } else {
+            } else if(profile.functionality == "DOCTOR") {
+                val intent = Intent(requireActivity(), DoctorActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
+            }
+            else {
                 (activity as? MainActivity)?.replaceFragment(ProfileFragment())
             }
         } else {

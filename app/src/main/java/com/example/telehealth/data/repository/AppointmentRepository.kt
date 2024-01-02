@@ -22,6 +22,34 @@ class AppointmentRepository(private val context: Context) {
         }
     }
 
+    suspend fun getAppointmentsOfUser(userId: String): List<AppointmentModel> {
+        return try {
+            // Querying the appointments collection for documents where 'doctorId' matches the provided doctorId
+            appointmentsCollection
+                .whereEqualTo("userId", userId)
+                .get().await().mapNotNull { document ->
+                    document.toObject<AppointmentModel>()
+                }
+        } catch (e: Exception) {
+            Log.e("AppointmentRepository", "Error fetching appointments for doctor", e)
+            listOf()
+        }
+    }
+
+    suspend fun getAppointmentsOfDoctor(doctorId: String): List<AppointmentModel> {
+        return try {
+            // Querying the appointments collection for documents where 'doctorId' matches the provided doctorId
+            appointmentsCollection
+                .whereEqualTo("doctorId", doctorId)
+                .get().await().mapNotNull { document ->
+                    document.toObject<AppointmentModel>()
+                }
+        } catch (e: Exception) {
+            Log.e("AppointmentRepository", "Error fetching appointments for doctor", e)
+            listOf()
+        }
+    }
+
     suspend fun addOrUpdateAppointment(ap: AppointmentModel) {
         ap.appointmentId?.let { id ->
             appointmentsCollection.document(id).set(ap).await()

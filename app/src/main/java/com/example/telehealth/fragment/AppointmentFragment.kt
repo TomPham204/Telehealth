@@ -95,12 +95,12 @@ class AppointmentFragment : Fragment(), OnRemoveClickListener, OnVideoCallClickL
         observeDoctors()
         doctorViewModel.getAllDoctors()
 
-
         //get list of appointment to populate the list on UI
         adapter = AppointmentAdapter(mutableListOf<AppointmentModel>(), this as OnRemoveClickListener, this as OnVideoCallClickListener)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         observeAppointments()
-        appointmentViewModel.getAllAppointments()
+
+        appointmentViewModel.getAppointmentsOfUser(profileViewModel.getCurrentId()!!)
         recyclerView.adapter = adapter
 
         saveButton.setOnClickListener {
