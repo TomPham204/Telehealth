@@ -5,10 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.telehealth.fragment.AppointmentFragment
 import com.example.telehealth.fragment.ChatFragment
-import com.example.telehealth.fragment.LoginFragment
 import com.example.telehealth.fragment.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set default fragment when the app starts
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, LoginFragment())
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ProfileFragment())
                 .commit()
         }
 

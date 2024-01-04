@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.telehealth.AdminActivity
 import com.example.telehealth.DoctorActivity
+import com.example.telehealth.LoginActivity
 import com.example.telehealth.MainActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.LoginScreenBinding
@@ -97,7 +98,10 @@ class LoginFragment : Fragment() {
                 requireActivity().finish()
             }
             else {
-                (activity as? MainActivity)?.replaceFragment(ProfileFragment())
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
             }
         } else {
             // Credentials are invalid, handle the error
@@ -106,7 +110,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToSignup() {
-        (activity as? MainActivity)?.replaceFragment(SignupFragment())
+        (activity as? LoginActivity)?.replaceFragment(SignupFragment())
     }
 
     private fun saveLoginStatus(userId: String) {

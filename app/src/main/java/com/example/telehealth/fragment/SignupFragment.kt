@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.telehealth.MainActivity
+import com.example.telehealth.LoginActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.SignupScreenBinding
 import com.example.telehealth.viewmodel.ProfileViewModel
@@ -88,7 +88,7 @@ class SignupFragment : Fragment() {
     }
 
     private fun navigateToLogin() {
-        (activity as? MainActivity)?.replaceFragment(LoginFragment())
+        (activity as? LoginActivity)?.replaceFragment(LoginFragment())
     }
 
     override fun onDestroyView() {
