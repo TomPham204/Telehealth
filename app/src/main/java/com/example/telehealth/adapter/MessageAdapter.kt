@@ -1,16 +1,29 @@
 package com.example.telehealth.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.telehealth.data.dataclass.MessageModel
 import com.example.telehealth.databinding.ItemMessageBinding
 
-class MessageAdapter(private val messages: MutableList<MessageModel>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+data class MessageDisplayModel (val sender: String, val text: String)
+
+
+class MessageAdapter(private val messages: MutableList<MessageDisplayModel>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
     inner class MessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: MessageModel) {
+        fun bind(message: MessageDisplayModel) {
+            binding.textSender.text = message.sender
             binding.textViewMessage.text = message.text
+
+            if(message.sender=="Me") {
+                binding.textSender.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
+                binding.textViewMessage.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
+            } else {
+                // Optionally, you can define the alignment for the "Other" case
+                binding.textSender.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                binding.textViewMessage.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+            }
         }
     }
 
@@ -25,7 +38,7 @@ class MessageAdapter(private val messages: MutableList<MessageModel>) : Recycler
         holder.bind(message)
     }
 
-    fun updateMessages(newMessages: List<MessageModel>) {
+    fun updateMessages(newMessages: List<MessageDisplayModel>) {
         messages.clear()
         messages.addAll(newMessages)
         notifyDataSetChanged()

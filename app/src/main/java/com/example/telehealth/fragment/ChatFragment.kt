@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.telehealth.adapter.DoctorAdapter
 import com.example.telehealth.adapter.DoctorSpinnerItem
 import com.example.telehealth.adapter.MessageAdapter
+import com.example.telehealth.adapter.MessageDisplayModel
 import com.example.telehealth.data.dataclass.DoctorModel
 import com.example.telehealth.data.dataclass.MessageModel
 import com.example.telehealth.databinding.ChatFragmentBinding
@@ -28,7 +30,7 @@ class ChatFragment: Fragment() {
     private val binding get() = _binding!!
     private var currentUserId: String? = ""
     private var doctors = mutableListOf<DoctorModel>()
-    private var messages = mutableListOf<MessageModel>()
+    private var messages = mutableListOf<MessageDisplayModel>()
 
     private lateinit var doctorViewModel: DoctorViewModel
     private lateinit var profileViewModel: ProfileViewModel
@@ -37,7 +39,6 @@ class ChatFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = ChatFragmentBinding.inflate(inflater, container, false)
-
 
         // init the viewmodels
         val doctorFactory = DoctorViewModelFactory(requireContext())
@@ -61,6 +62,17 @@ class ChatFragment: Fragment() {
         observeDoctors()
         doctorViewModel.getAllDoctors()
         doctorSpinner.adapter = doctorSpinnerAdapter
+        binding.chatDoctorSpinner.setSelection(0)
+
+        binding.chatDoctorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                chatViewModel.getChatBySenderAndReceiver(currentUserId!!, getCurrentSelected()!!.doctorId)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                binding.chatDoctorSpinner.setSelection(0)
+            }
+        }
 
         return binding.root
     }
@@ -73,9 +85,17 @@ class ChatFragment: Fragment() {
         }
     }
 
+    private fun getCurrentSelected(): DoctorModel? {
+        val selected = binding.chatDoctorSpinner.selectedItem
+        return if (selected is DoctorSpinnerItem) {
+            selected.doctor
+        } else {
+            null
+        }
+    }
+
     private fun setupRecyclerView() {
         observeChat()
-        chatViewModel.getChatBySender(currentUserId!!)
 
         adapter = MessageAdapter(mutableListOf())
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -84,7 +104,7 @@ class ChatFragment: Fragment() {
 
     private fun sendMessage() {
         val messageText = binding.messageEditText.text.toString().trim()
-        val receiver = binding.chatDoctorSpinner.selectedItem.toString().trim()
+        val receiver = getCurrentSelected()!!.doctorId.toString().trim()
 
         if(messageText.isEmpty() ||receiver.isEmpty()) {
             Toast.makeText(activity, "Message or receiver is empty", Toast.LENGTH_LONG).show()
@@ -93,7 +113,7 @@ class ChatFragment: Fragment() {
 
         if (messageText.isNotEmpty()) {
             val message = MessageModel(text = messageText, senderId = currentUserId!!, receiverId = receiver)
-            messages.add(message)
+            messages.add(MessageDisplayModel("Me", message.text))
             adapter.updateMessages(messages)
             chatViewModel.addChat(message)
             binding.messageEditText.text.clear()
@@ -116,7 +136,10 @@ class ChatFragment: Fragment() {
 
     private fun observeChat() {
         chatViewModel.chatLiveData.observe(viewLifecycleOwner) {chats ->
-            messages=chats.toMutableList()
+            messages = chats.map { chat ->
+                val sender = if (currentUserId == chat.senderId) "Me" else "Other"
+                MessageDisplayModel(sender = sender, text = chat.text)
+            }.toMutableList()
             adapter.updateMessages(messages)
         }
     }

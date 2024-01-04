@@ -7,15 +7,15 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.telehealth.R
-import com.example.telehealth.data.dataclass.DoctorModel
+import com.example.telehealth.data.dataclass.ProfileModel
 
-data class DoctorSpinnerItem(
+data class PatientSpinnerItem(
     val displayText: String,
-    val doctor: DoctorModel
+    val patient: ProfileModel
 )
 
-class DoctorAdapter(context: Context, doctors: List<DoctorSpinnerItem>) :
-    ArrayAdapter<DoctorSpinnerItem>(context, R.layout.chat_spinner_item, doctors) {
+class PatientAdapter(context: Context, private var patients: List<PatientSpinnerItem>) :
+    ArrayAdapter<PatientSpinnerItem>(context, R.layout.chat_spinner_item, patients) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(
@@ -24,14 +24,14 @@ class DoctorAdapter(context: Context, doctors: List<DoctorSpinnerItem>) :
             false
         )
 
-        val doctor = getItem(position)
+        val patient = getItem(position)
         val textView = view.findViewById<TextView>(R.id.spinnerItem)
-        textView.text = doctor?.displayText
+        textView.text = patient?.displayText
 
         return view
     }
 
-    fun updateList(newList: List<DoctorSpinnerItem>) {
+    fun updateList(newList: List<PatientSpinnerItem>) {
         clear()
         addAll(newList)
         notifyDataSetChanged()

@@ -1,6 +1,7 @@
 package com.example.telehealth.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.telehealth.MainActivity
+import com.example.telehealth.LoginActivity
 import com.example.telehealth.data.dataclass.ProfileModel
 import com.example.telehealth.databinding.ProfileFragmentBinding
 import com.example.telehealth.viewmodel.ProfileViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ProfileFragment : Fragment() {
 
@@ -50,7 +53,10 @@ class ProfileFragment : Fragment() {
             putString("USER_ID", null)
             apply()
         }
-        (activity as? MainActivity)?.replaceFragment(LoginFragment())
+        val intent = Intent(requireActivity(), LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()
     }
 
     private fun observeProfileData() {
@@ -67,13 +73,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun displayUserProfile(userProfile: ProfileModel) {
-        binding.editTextId.text = userProfile.userId
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val dateOfBirthStr = dateFormat.format(userProfile.dateOfBirth)
+
         binding.editTextEmail.setText(userProfile.email)
-        binding.editTextFunctionality.setText(userProfile.functionality)
+        binding.editTextFunctionality.text = userProfile.functionality
         binding.editTextName.setText(userProfile.name)
-        binding.editTextDateOfBirth.text= userProfile.dateOfBirth.toString()
+        binding.editTextDateOfBirth.text= dateOfBirthStr
         binding.editTextAddress.setText(userProfile.address)
-        binding.editTextGender.setText(userProfile.gender)
+        binding.editTextGender.text = userProfile.gender
         binding.editTextDescription.setText(userProfile.description)
         // Don't set the password for security reasons
     }
@@ -84,26 +92,26 @@ class ProfileFragment : Fragment() {
 
         if(_password.isNotEmpty()) {
             val updatedProfile = ProfileModel(
-                userId = binding.editTextId.text.toString(),
+                userId = user!!.userId.toString(),
                 email = binding.editTextEmail.text.toString(),
-                functionality = binding.editTextFunctionality.text.toString(),
+                functionality = user!!.functionality.toString(),
                 name = binding.editTextName.text.toString(),
                 dateOfBirth = user!!.dateOfBirth,
                 address = binding.editTextAddress.text.toString(),
-                gender = binding.editTextGender.text.toString(),
+                gender = user!!.gender.toString(),
                 description = binding.editTextDescription.text.toString(),
                 password = _password
                 )
             updateProfile(updatedProfile)
         } else {
             val updatedProfile = ProfileModel(
-                userId = binding.editTextId.text.toString(),
+                userId = user!!.userId.toString(),
                 email = binding.editTextEmail.text.toString(),
-                functionality = binding.editTextFunctionality.text.toString(),
+                functionality = user!!.functionality.toString(),
                 name = binding.editTextName.text.toString(),
                 dateOfBirth = user!!.dateOfBirth,
                 address = binding.editTextAddress.text.toString(),
-                gender = binding.editTextGender.text.toString(),
+                gender = user!!.gender.toString(),
                 description = binding.editTextDescription.text.toString(),
                 password = user!!.password
             )

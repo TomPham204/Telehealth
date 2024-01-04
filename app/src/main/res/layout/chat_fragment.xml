@@ -17,7 +17,7 @@
             android:spinnerMode="dropdown"
             android:dropDownWidth="match_parent"
             android:dropDownVerticalOffset="16dp"
-            android:background="@color/white" />
+            android:background="@color/silver" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatRecyclerView"
