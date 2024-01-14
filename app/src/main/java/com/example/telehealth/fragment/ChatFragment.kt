@@ -22,6 +22,8 @@ import com.example.telehealth.databinding.ChatFragmentBinding
 import com.example.telehealth.viewmodel.ChatViewModel
 import com.example.telehealth.viewmodel.DoctorViewModel
 import com.example.telehealth.viewmodel.ProfileViewModel
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 class ChatFragment: Fragment() {
     private lateinit var adapter: MessageAdapter
@@ -66,7 +68,7 @@ class ChatFragment: Fragment() {
 
         binding.chatDoctorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                chatViewModel.getChatBySenderAndReceiver(currentUserId!!, getCurrentSelected()!!.doctorId)
+                recursiveFetchChat()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -75,6 +77,13 @@ class ChatFragment: Fragment() {
         }
 
         return binding.root
+    }
+
+    fun recursiveFetchChat() {
+        chatViewModel.getChatBySenderAndReceiver(currentUserId!!, getCurrentSelected()!!.doctorId)
+        Timer().schedule(5000){
+            recursiveFetchChat()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
